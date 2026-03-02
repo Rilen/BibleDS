@@ -35,6 +35,9 @@ import {
     closeOutline,
     informationCircleOutline,
     refreshOutline,
+    analyticsOutline,
+    layersOutline,
+    bookOutline,
 } from 'ionicons/icons';
 
 import { BibleService } from '../../services/bible.service';
@@ -67,7 +70,6 @@ interface ChapterAnalysis {
         IonToolbar,
         IonTitle,
         IonItem,
-        IonBadge,
         IonIcon,
         IonSearchbar,
         IonSpinner,
@@ -126,9 +128,9 @@ export class ReaderPage implements OnInit, OnDestroy {
             closeOutline,
             informationCircleOutline,
             refreshOutline,
-            analyticsOutline: 'analytics-outline',
-            layersOutline: 'layers-outline',
-            bookOutline: 'book-outline',
+            analyticsOutline,
+            layersOutline,
+            bookOutline,
         });
     }
 

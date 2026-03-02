@@ -10,10 +10,12 @@
                 {{ currentBookName || 'Bíblia' }}
                 <small *ngIf="currentChapter"> – Cap. {{ currentChapter }}</small>
             </span>
-            <span *ngIf="viewMode === 'search'">🔍 Pesquisa</span>
+            <span *ngIf="viewMode === 'search'">Busca</span>
+            <span *ngIf="viewMode === 'analysis'">Análise</span>
+            <small style="display: block; font-size: 0.6em; opacity: 0.7; margin-top: -2px;">Ave Maria — Shard
+                v1.2</small>
         </ion-title>
         <ion-buttons slot="end">
-            <!-- Controle de fonte -->
             <ion-button fill="clear" color="light" (click)="decreaseFontSize()" title="Diminuir fonte">
                 <span style="font-size: 12px; font-weight: 700;">A</span>
             </ion-button>
@@ -21,16 +23,6 @@
                 <span style="font-size: 18px; font-weight: 700;">A</span>
             </ion-button>
         </ion-buttons>
-    </ion-toolbar>
-
-    <!-- Info Barra -->
-    <ion-toolbar class="reader-info-bar">
-        <ion-chip slot="start" color="primary" outline="true">
-            Ave Maria
-        </ion-chip>
-        <ion-badge slot="end" color="secondary" *ngIf="viewMode === 'chapter'">
-            Cap. {{ currentChapter }}
-        </ion-badge>
     </ion-toolbar>
 
     <!-- Tab Leitura / Pesquisa -->

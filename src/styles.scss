@@ -130,10 +130,10 @@ ion-select {
 
 /* ─── Ion Searchbar ─────────────────────────────────────────── */
 ion-searchbar {
-    --background: rgba(255, 255, 255, 0.06);
-    --color: #e2e8f0;
-    --placeholder-color: rgba(226, 232, 240, 0.4);
-    --icon-color: rgba(226, 232, 240, 0.5);
+    --background: #2a2a4a;
+    --color: #ffffff;
+    --placeholder-color: rgba(255, 255, 255, 0.5);
+    --icon-color: var(--ion-color-primary-tint);
     --border-radius: 12px;
 }
 
