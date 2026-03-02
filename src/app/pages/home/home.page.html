@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <span class="app-title">📖 BíbliaDS</span>
+    </ion-title>
+  </ion-toolbar>
+
+  <!-- Seletor de Versão -->
+  <ion-toolbar color="secondary" class="version-toolbar">
+    <ion-select [(ngModel)]="selectedVersion" interface="action-sheet" label="Versão" labelPlacement="floating"
+      fill="outline" class="version-select">
+      <ion-select-option *ngFor="let v of versions" [value]="v.slug">
+        {{ v.label }} — <em>{{ v.tradition }}</em>
+      </ion-select-option>
+    </ion-select>
+
+    <ion-button slot="end" fill="clear" color="light" (click)="openRandomVerse()" title="Versículo Aleatório">
+      <ion-icon name="shuffle-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+
+  <!-- Barra de Busca -->
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="onSearchChange($event)" placeholder="Buscar livro ou autor..."
+      animated="true" debounce="300"></ion-searchbar>
+  </ion-toolbar>
+
+  <!-- Filtro por Testamento -->
+  <ion-toolbar>
+    <ion-segment value="ALL" (ionChange)="onTestamentChange($event)">
+      <ion-segment-button value="ALL">
+        <ion-label>Todos</ion-label>
+        <ion-badge color="medium">{{ books.length }}</ion-badge>
+      </ion-segment-button>
+      <ion-segment-button value="VT">
+        <ion-label>Antigo</ion-label>
+        <ion-badge color="warning">{{ vtCount }}</ion-badge>
+      </ion-segment-button>
+      <ion-segment-button value="NT">
+        <ion-label>Novo</ion-label>
+        <ion-badge color="success">{{ ntCount }}</ion-badge>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="home-content">
+
+  <!-- Insight de BI Bíblico -->
+  <div *ngIf="insight && !loading" class="home-insight-card">
+    <div class="insight-icon-box">
+      <ion-icon [name]="insight.icon" color="primary"></ion-icon>
+    </div>
+    <div class="insight-content">
+      <div class="insight-header">
+        <ion-icon name="sparkles-outline" color="secondary" size="small"></ion-icon>
+        <span>Dataset Insight</span>
+        <ion-badge color="secondary" slot="end">{{ insight.stat }}</ion-badge>
+      </div>
+      <h4>{{ insight.title }}</h4>
+      <p>{{ insight.description }}</p>
+    </div>
+  </div>
+
+  <!-- Estado de Carregamento -->
+  <div *ngIf="loading" class="loading-state">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Carregando livros...</p>
+  </div>
+
+  <!-- Estado de Erro -->
+  <div *ngIf="error && !loading" class="error-state">
+    <ion-card color="danger">
+      <ion-card-content>
+        <ion-icon name="information-circle-outline" size="large"></ion-icon>
+        <p>{{ error }}</p>
+        <ion-button fill="outline" color="light" (click)="loadBooks()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Tentar Novamente
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Lista de Livros -->
+  <ion-list *ngIf="!loading && !error" class="books-list">
+    <ng-container *ngFor="let book of filteredBooks; trackBy: trackByBook">
+      <ion-item button detail="true" (click)="openBook(book)" class="book-item"
+        [class.vt-item]="book.testament === 'VT'" [class.nt-item]="book.testament === 'NT'">
+        <div slot="start" class="book-icon">
+          <ion-icon [name]="book.testament === 'NT' ? 'book-sharp' : 'book-outline'"
+            [color]="book.testament === 'NT' ? 'success' : 'warning'" size="large"></ion-icon>
+        </div>
+
+        <ion-label>
+          <h2 class="book-name">{{ book.name }}</h2>
+          <p class="book-meta">
+            <ion-chip [color]="book.testament === 'NT' ? 'success' : 'warning'" outline="true">
+              {{ book.testament === 'NT' ? 'Novo Testamento' : 'Antigo Testamento' }}
+            </ion-chip>
+          </p>
+          <p class="book-details">
+            <strong>Autor:</strong> {{ book.author }} &nbsp;|&nbsp;
+            <strong>Grupo:</strong> {{ book.group }}
+          </p>
+        </ion-label>
+
+        <div slot="end" class="chapter-badge">
+          <ion-badge [color]="book.testament === 'NT' ? 'success' : 'warning'">
+            {{ book.chapters }} cap.
+          </ion-badge>
+        </div>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+
+  <!-- Lista Vazia -->
+  <div *ngIf="!loading && !error && filteredBooks.length === 0" class="empty-state">
+    <ion-icon name="search-outline" size="large" color="medium"></ion-icon>
+    <p>Nenhum livro encontrado para "<strong>{{ searchTerm }}</strong>"</p>
+  </div>
+
+</ion-content>

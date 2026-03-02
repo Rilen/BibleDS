@@ -1,0 +1,126 @@
+// ── Home Page Styles ──────────────────────────────────────────
+
+.version-toolbar {
+  --background: var(--ion-color-secondary);
+
+  .version-select {
+    --color: white;
+    --placeholder-color: rgba(255, 255, 255, 0.7);
+    max-width: calc(100% - 56px);
+    font-size: 0.9rem;
+  }
+}
+
+.home-content {
+  --background: var(--ion-background-color);
+}
+
+.books-list {
+  padding: 8px 0;
+}
+
+.book-item {
+  --padding-start: 8px;
+  --inner-padding-end: 8px;
+  --border-radius: 12px;
+  margin: 4px 8px;
+  border-radius: 12px;
+
+  &.vt-item {
+    --background: rgba(var(--ion-color-warning-rgb), 0.05);
+    border-left: 3px solid var(--ion-color-warning);
+  }
+
+  &.nt-item {
+    --background: rgba(var(--ion-color-success-rgb), 0.05);
+    border-left: 3px solid var(--ion-color-success);
+  }
+
+  .book-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    margin-right: 8px;
+  }
+
+  .book-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ion-text-color);
+  }
+
+  .book-meta {
+    margin: 4px 0;
+
+    ion-chip {
+      font-size: 0.7rem;
+      height: 20px;
+      margin: 0;
+    }
+  }
+
+  .book-details {
+    font-size: 0.75rem;
+    color: var(--ion-color-medium);
+  }
+
+  .chapter-badge {
+    display: flex;
+    align-items: center;
+
+    ion-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+  }
+}
+
+// ── Estado de Loading ──────────────────────────────────────────
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  gap: 16px;
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+  }
+}
+
+// ── Estado de Erro ──────────────────────────────────────────────
+.error-state {
+  padding: 16px;
+
+  ion-card {
+    text-align: center;
+    border-radius: 12px;
+
+    ion-card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+  }
+}
+
+// ── Estado Vazio ────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+  gap: 12px;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+// ── Header Title ──────────────────────────────────────────────
+.app-title {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}

@@ -1,0 +1,180 @@
+/* ═══════════════════════════════════════════════════════════════
+   BíbliaDS – Global Styles
+   Ionic Framework + Angular 21
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Importar tema base do Ionic */
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* ─── Variáveis de Cores (Tema Escuro como padrão) ─────────── */
+:root {
+    /* Paleta principal – azul royal */
+    --ion-color-primary: #4a6cf7;
+    --ion-color-primary-rgb: 74, 108, 247;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-shade: #415fd9;
+    --ion-color-primary-tint: #5c7bf8;
+
+    /* Secundária – violeta */
+    --ion-color-secondary: #7c3aed;
+    --ion-color-secondary-rgb: 124, 58, 237;
+    --ion-color-secondary-contrast: #ffffff;
+    --ion-color-secondary-contrast-rgb: 255, 255, 255;
+    --ion-color-secondary-shade: #6d33d1;
+    --ion-color-secondary-tint: #894eef;
+
+    /* Sucesso (Novo Testamento) */
+    --ion-color-success: #22c55e;
+    --ion-color-success-rgb: 34, 197, 94;
+    --ion-color-success-contrast: #000000;
+    --ion-color-success-shade: #1eac53;
+    --ion-color-success-tint: #38cb6e;
+
+    /* Aviso (Antigo Testamento) */
+    --ion-color-warning: #f59e0b;
+    --ion-color-warning-rgb: 245, 158, 11;
+    --ion-color-warning-contrast: #000000;
+    --ion-color-warning-shade: #d88b0a;
+    --ion-color-warning-tint: #f6a823;
+
+    /* Perigo */
+    --ion-color-danger: #ef4444;
+    --ion-color-danger-rgb: 239, 68, 68;
+    --ion-color-danger-contrast: #ffffff;
+    --ion-color-danger-shade: #d23c3c;
+    --ion-color-danger-tint: #f15757;
+
+    /* Médio */
+    --ion-color-medium: #6b7280;
+    --ion-color-medium-rgb: 107, 114, 128;
+    --ion-color-medium-contrast: #ffffff;
+    --ion-color-medium-shade: #5e6472;
+    --ion-color-medium-tint: #7a8090;
+
+    /* Claro */
+    --ion-color-light: #f3f4f6;
+    --ion-color-light-rgb: 243, 244, 246;
+    --ion-color-light-contrast: #000000;
+    --ion-color-light-shade: #d6d8da;
+    --ion-color-light-tint: #f4f5f8;
+}
+
+/* ─── Tema Escuro ───────────────────────────────────────────── */
+body {
+    --ion-background-color: #0d0d1a;
+    --ion-background-color-rgb: 13, 13, 26;
+    --ion-text-color: #e2e8f0;
+    --ion-text-color-rgb: 226, 232, 240;
+
+    --ion-toolbar-background: #1a1a2e;
+    --ion-toolbar-color: #e2e8f0;
+    --ion-item-background: #161625;
+    --ion-card-background: #1e1e30;
+    --ion-border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Tipografia Global ─────────────────────────────────────── */
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+}
+
+/* Tipografia de versículos usa fontes serifadas */
+.verse-text,
+.result-text {
+    font-family: 'Lora', 'Georgia', 'Times New Roman', serif !important;
+}
+
+/* ─── Scrollbar Customizada ─────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(74, 108, 247, 0.4);
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 108, 247, 0.7);
+}
+
+/* ─── Toolbar Global ────────────────────────────────────────── */
+ion-toolbar[color='primary'] {
+    --background: linear-gradient(135deg, #2d3561 0%, #1a1a2e 100%);
+    --color: #ffffff;
+    box-shadow: 0 2px 12px rgba(74, 108, 247, 0.3);
+}
+
+/* ─── Ion Select ────────────────────────────────────────────── */
+ion-select {
+    --placeholder-color: rgba(226, 232, 240, 0.5);
+    --color: #e2e8f0;
+}
+
+/* ─── Ion Searchbar ─────────────────────────────────────────── */
+ion-searchbar {
+    --background: rgba(255, 255, 255, 0.06);
+    --color: #e2e8f0;
+    --placeholder-color: rgba(226, 232, 240, 0.4);
+    --icon-color: rgba(226, 232, 240, 0.5);
+    --border-radius: 12px;
+}
+
+/* ─── Ion Item ──────────────────────────────────────────────── */
+ion-item {
+    --background: transparent;
+    --color: #e2e8f0;
+    --border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Ion Badge ─────────────────────────────────────────────── */
+ion-badge {
+    font-weight: 700;
+    border-radius: 6px;
+}
+
+/* ─── Ion Chip ──────────────────────────────────────────────── */
+ion-chip {
+    font-size: 0.75rem;
+}
+
+/* ─── Animações de Entrada ──────────────────────────────────── */
+ion-content {
+    --padding-bottom: 16px;
+}
+
+/* Animação suave de fade para conteúdo dinâmico */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.verse-item,
+.search-result-card,
+.book-item {
+    animation: fadeIn 0.2s ease forwards;
+}
