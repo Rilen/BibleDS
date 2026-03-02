@@ -17,6 +17,11 @@ export const routes: Routes = [
             import('./pages/reader/reader.page').then((m) => m.ReaderPage),
     },
     {
+        path: 'dashboard',
+        loadComponent: () =>
+            import('./pages/dashboard/dashboard.page').then((m) => m.DashboardPage),
+    },
+    {
         path: '**',
         redirectTo: 'home',
     },

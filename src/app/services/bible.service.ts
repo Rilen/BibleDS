@@ -1,161 +1,157 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError, timeout } from 'rxjs';
-import { catchError, map, shareReplay } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import {
     Book,
     Chapter,
     Verse,
     SearchResult,
     BibleVersion,
-    BibleVersionSlug,
 } from '../models/bible.models';
 
-// Estrutura do JSON Local (Ave-Maria)
-interface LocalVerse {
-    versiculo: number;
-    texto: string;
+// Estrutura do JSON Local de Livro Pequeno (Sharded)
+interface LocalBookIndex {
+    name: string;
+    slug: string;
+    testament: 'VT' | 'NT';
+    chapters: number;
 }
 
-interface LocalChapter {
-    capitulo: number;
-    versiculos: LocalVerse[];
-}
-
-interface LocalBook {
-    nome: string;
-    capitulos: LocalChapter[];
-}
-
-interface LocalBible {
-    antigoTestamento: LocalBook[];
-    novoTestamento: LocalBook[];
-}
+type LocalChapterFlat = string[]; // array de versiculos
 
 @Injectable({ providedIn: 'root' })
 export class BibleService {
-    private readonly base = environment.apiBaseUrl;
     private booksCache$?: Observable<Book[]>;
-    private localBibleData$?: Observable<LocalBible>;
+    private bookDataCache: Map<string, Observable<LocalChapterFlat[]>> = new Map();
 
     constructor(private http: HttpClient) { }
 
-    private handleError(operation: string) {
-        return (error: any): Observable<never> => {
-            console.error(`${operation} failed:`, error);
-            let message = 'Ocorreu um erro na comunicação com o servidor bíblico.';
-
-            if (error instanceof HttpErrorResponse) {
-                if (error.status === 403) {
-                    message = 'Limite de requisições excedido ou acesso negado. (20 req/hora em modo anônimo).';
-                } else if (error.status === 0) {
-                    message = 'Falha na conexão com a Internet. Verifique sua rede.';
-                }
-            }
-
-            return throwError(() => new Error(message));
-        };
-    }
-
     getVersions(): Observable<BibleVersion[]> {
-        return this.http.get<BibleVersion[]>(`${this.base}/versions`).pipe(
-            timeout(10000),
-            catchError(this.handleError('getVersions'))
-        );
+        const versions: BibleVersion[] = [
+            { slug: 'am', label: 'Ave Maria (Local)', tradition: 'Católica' }
+        ];
+        return of(versions);
     }
 
     getBooks(): Observable<Book[]> {
         if (!this.booksCache$) {
-            this.booksCache$ = this.http.get<Book[]>(`${this.base}/books`).pipe(
-                timeout(10000),
-                map(books => books.map(b => ({ ...b, testament: b.testament.toUpperCase() as any }))),
-                shareReplay(1),
-                catchError(this.handleError('getBooks'))
+            this.booksCache$ = this.http.get<LocalBookIndex[]>('data/books_index.json').pipe(
+                map(indices => indices.map(idx => ({
+                    abbrev: { pt: idx.slug, en: idx.slug },
+                    author: 'Vários',
+                    chapters: idx.chapters,
+                    comment: '',
+                    group: idx.testament === 'VT' ? 'Antigo Testamento' : 'Novo Testamento',
+                    name: idx.name,
+                    testament: idx.testament
+                } as Book))),
+                shareReplay(1)
             );
         }
         return this.booksCache$;
     }
 
-    private getLocalBible(): Observable<LocalBible> {
-        if (!this.localBibleData$) {
-            this.localBibleData$ = this.http.get<LocalBible>('data/ave_maria.json').pipe(
+    // Método para carregar um livro específico (Lazy Loading)
+    private getLocalBook(slug: string): Observable<LocalChapterFlat[]> {
+        if (!this.bookDataCache.has(slug)) {
+            const obs = this.http.get<LocalChapterFlat[]>(`data/books/${slug}.json`).pipe(
                 shareReplay(1),
                 catchError(err => {
-                    console.error('Erro ao carregar Bíblia Local', err);
-                    return throwError(() => new Error('Falha ao carregar base de dados local.'));
+                    console.error(`Erro ao carregar livro: ${slug}`, err);
+                    return throwError(() => new Error(`Falha ao carregar livro "${slug}".`));
                 })
             );
+            this.bookDataCache.set(slug, obs);
         }
-        return this.localBibleData$;
+        return this.bookDataCache.get(slug)!;
     }
 
     getChapter(version: string, bookSlug: string, chapter: number): Observable<Chapter> {
-        if (version === 'am') {
-            return this.getLocalChapter(bookSlug, chapter);
-        }
-        return this.http.get<Chapter>(`${this.base}/verses/${version}/${bookSlug}/${chapter}`).pipe(
-            timeout(10000),
-            catchError(this.handleError('getChapter'))
+        return this.getBooks().pipe(
+            map(books => books.find(b => b.abbrev.pt === bookSlug || this.normalizeSlug(b.name) === bookSlug)),
+            map(book => {
+                if (!book) throw new Error(`Livro "${bookSlug}" não encontrado.`);
+                return book;
+            }),
+            switchMap(book => this.getLocalBook(book.abbrev.pt).pipe(
+                map(chapters => {
+                    const chapterData = chapters[chapter - 1];
+                    if (!chapterData) throw new Error(`Capítulo ${chapter} não encontrado.`);
+
+                    return {
+                        book: { ...book },
+                        chapter: { number: chapter, verses: chapterData.length },
+                        verses: chapterData.map((text, idx) => ({
+                            number: idx + 1,
+                            text: text
+                        }))
+                    } as unknown as Chapter;
+                })
+            ))
         );
     }
 
-    private getLocalChapter(bookSlugOrName: string, chapterNum: number): Observable<Chapter> {
+    // Para busca e analytics pesado, carregamos o arquivo original completo (se necessário)
+    // ou mantemos o ave_maria.json original apenas para essas operações "on-demand"
+    public getLocalBible(): Observable<any> {
+        return this.http.get<any>('data/ave_maria.json').pipe(
+            shareReplay(1)
+        );
+    }
+
+    searchVerses(query: string, version: string = 'am'): Observable<SearchResult> {
+        const normalizedQuery = query.toLowerCase();
         return this.getLocalBible().pipe(
             map(bible => {
-                let book = bible.antigoTestamento.find(b =>
-                    b.nome.toLowerCase() === bookSlugOrName.toLowerCase() ||
-                    this.normalizeSlug(b.nome) === bookSlugOrName
-                );
+                const results: any[] = [];
+                const allBooks = [...bible.vt, ...bible.nt];
 
-                if (!book) {
-                    book = bible.novoTestamento.find(b =>
-                        b.nome.toLowerCase() === bookSlugOrName.toLowerCase() ||
-                        this.normalizeSlug(b.nome) === bookSlugOrName
-                    );
+                for (const book of allBooks) {
+                    for (const chapter of book.c) {
+                        for (const verse of chapter.v) {
+                            if (verse.t.toLowerCase().includes(normalizedQuery)) {
+                                results.push({
+                                    book: { name: book.n, abbrev: { pt: this.normalizeSlug(book.n) } },
+                                    chapter: chapter.i,
+                                    number: verse.i,
+                                    text: verse.t
+                                });
+                            }
+                            if (results.length >= 50) break;
+                        }
+                        if (results.length >= 50) break;
+                    }
+                    if (results.length >= 50) break;
                 }
 
-                if (!book) throw new Error(`Livro "${bookSlugOrName}" não encontrado (AM).`);
-
-                const chapter = book.capitulos.find(c => c.capitulo === chapterNum);
-                if (!chapter) throw new Error(`Capítulo ${chapterNum} não encontrado.`);
-
                 return {
-                    book: {
-                        name: book.nome,
-                        author: 'Vários',
-                        group: 'Ave Maria',
-                        version: 'am',
-                        abbrev: { pt: bookSlugOrName, en: bookSlugOrName }
-                    },
-                    chapter: {
-                        number: chapter.capitulo,
-                        verses: chapter.versiculos.length
-                    },
-                    verses: chapter.versiculos.map(v => ({
-                        number: v.versiculo,
-                        text: v.texto
-                    }))
-                } as unknown as Chapter;
+                    occurrence: results.length,
+                    version: 'am',
+                    verses: results
+                } as SearchResult;
             })
         );
     }
 
-    searchVerses(query: string, version: string = 'nvi'): Observable<SearchResult> {
-        if (version === 'am') {
-            return throwError(() => new Error('Busca local na Ave Maria ainda não disponível. Use NVI para buscas.'));
-        }
-        const params = new HttpParams().set('version', version).set('search', query);
-        return this.http.post<SearchResult>(`${this.base}/verses/search`, { version, search: query }).pipe(
-            timeout(15000),
-            catchError(this.handleError('searchVerses'))
-        );
-    }
+    getRandomVerse(version: string = 'am'): Observable<Verse> {
+        return this.getBooks().pipe(
+            map(books => books[Math.floor(Math.random() * books.length)]),
+            switchMap(book => this.getLocalBook(book.abbrev.pt).pipe(
+                map(chapters => {
+                    const chIndex = Math.floor(Math.random() * chapters.length);
+                    const chapter = chapters[chIndex];
+                    const vIndex = Math.floor(Math.random() * chapter.length);
+                    const verseText = chapter[vIndex];
 
-    getRandomVerse(version: string = 'nvi'): Observable<Verse> {
-        return this.http.get<Verse>(`${this.base}/verses/${version}/random`).pipe(
-            timeout(10000),
-            catchError(this.handleError('getRandomVerse'))
+                    return {
+                        book: { ...book },
+                        chapter: chIndex + 1,
+                        number: vIndex + 1,
+                        text: verseText
+                    } as unknown as Verse;
+                })
+            ))
         );
     }
 

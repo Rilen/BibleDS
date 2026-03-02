@@ -5,18 +5,18 @@
     </ion-title>
   </ion-toolbar>
 
-  <!-- Seletor de Versão -->
-  <ion-toolbar color="secondary" class="version-toolbar">
-    <ion-select [(ngModel)]="selectedVersion" interface="action-sheet" label="Versão" labelPlacement="floating"
-      fill="outline" class="version-select">
-      <ion-select-option *ngFor="let v of versions" [value]="v.slug">
-        {{ v.label }} — <em>{{ v.tradition }}</em>
-      </ion-select-option>
-    </ion-select>
-
-    <ion-button slot="end" fill="clear" color="light" (click)="openRandomVerse()" title="Versículo Aleatório">
-      <ion-icon name="shuffle-outline" slot="icon-only"></ion-icon>
-    </ion-button>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <span class="app-title">📖 BíbliaDS — Ave Maria</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="light" routerLink="/dashboard" title="Dashboard Estatístico">
+        <ion-icon name="analytics-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" color="light" (click)="openRandomVerse()" title="Versículo Aleatório">
+        <ion-icon name="shuffle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 
   <!-- Barra de Busca -->

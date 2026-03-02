@@ -63,12 +63,11 @@ export interface SearchResult {
     verses: Verse[];
 }
 
-// ─── Versão da API ───────────────────────────────────────────
+// ─── Versão da Bíblia ────────────────────────────────────────
 export interface BibleVersion {
-    version: string;
-    verses: number;
-    language: string;
-    books: { name: string; chapters: number }[];
+    slug: BibleVersionSlug;
+    label: string;
+    tradition: string;
 }
 
 // ─── Requisições e estados de UI ─────────────────────────────

@@ -12,8 +12,6 @@ import {
     IonItem,
     IonBadge,
     IonIcon,
-    IonSelect,
-    IonSelectOption,
     IonSearchbar,
     IonSpinner,
     IonButton,
@@ -40,7 +38,7 @@ import {
 } from 'ionicons/icons';
 
 import { BibleService } from '../../services/bible.service';
-import { Verse, Chapter, BibleVersionSlug, BIBLE_VERSIONS, SearchResult } from '../../models/bible.models';
+import { Verse, Chapter, BibleVersionSlug, SearchResult } from '../../models/bible.models';
 
 type ViewMode = 'chapter' | 'search' | 'analysis';
 
@@ -71,8 +69,6 @@ interface ChapterAnalysis {
         IonItem,
         IonBadge,
         IonIcon,
-        IonSelect,
-        IonSelectOption,
         IonSearchbar,
         IonSpinner,
         IonButton,
@@ -88,9 +84,7 @@ export class ReaderPage implements OnInit, OnDestroy {
     // ─── Estado ────────────────────────────────────────────────
     viewMode: ViewMode = 'chapter';
 
-    selectedVersion: BibleVersionSlug = 'nvi';
-    compareMode = false;
-    secondaryVersion: BibleVersionSlug = 'ra';
+    selectedVersion: BibleVersionSlug = 'am';
 
     currentBook = '';
     currentBookName = '';
@@ -98,7 +92,6 @@ export class ReaderPage implements OnInit, OnDestroy {
     totalChapters = 0;
 
     verses: Verse[] = [];
-    secondaryVerses: Verse[] = [];
     searchResults: SearchResult | null = null;
     searchStats: SearchStats | null = null;
     searchTerm = '';
@@ -111,7 +104,6 @@ export class ReaderPage implements OnInit, OnDestroy {
     analysis: ChapterAnalysis | null = null;
 
     fontSize = 16; // px
-    versions = BIBLE_VERSIONS;
 
     private destroy$ = new Subject<void>();
     private searchSubject = new Subject<string>();
@@ -135,7 +127,8 @@ export class ReaderPage implements OnInit, OnDestroy {
             informationCircleOutline,
             refreshOutline,
             analyticsOutline: 'analytics-outline',
-            layersOutline: 'layers-outline'
+            layersOutline: 'layers-outline',
+            bookOutline: 'book-outline',
         });
     }
 
@@ -167,7 +160,7 @@ export class ReaderPage implements OnInit, OnDestroy {
                     this.currentBook = params['book'];
                     this.currentBookName = params['bookName'] ?? params['book'];
                     this.currentChapter = Number(params['chapter'] ?? 1);
-                    this.selectedVersion = (params['version'] as BibleVersionSlug) ?? 'nvi';
+                    this.selectedVersion = (params['version'] as BibleVersionSlug) ?? 'am';
                     this.loadChapter();
                 }
             });
@@ -203,37 +196,6 @@ export class ReaderPage implements OnInit, OnDestroy {
                     this.showToast(err.message, 'danger');
                 },
             });
-
-        // Se o modo comparação estiver ativo, carregar a segunda versão
-        if (this.compareMode) {
-            this.bibleService
-                .getChapter(this.secondaryVersion, this.currentBook, this.currentChapter)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe({
-                    next: (chapter: Chapter) => {
-                        this.secondaryVerses = chapter.verses;
-                    },
-                    error: (err) => {
-                        console.warn('Falha ao carregar versão secundária', err);
-                    }
-                });
-        }
-    }
-
-    toggleComparison() {
-        this.compareMode = !this.compareMode;
-        if (this.compareMode) {
-            this.loadChapter();
-        } else {
-            this.secondaryVerses = [];
-        }
-    }
-
-    onSecondaryVersionChange(event: CustomEvent) {
-        this.secondaryVersion = event.detail.value;
-        if (this.compareMode) {
-            this.loadChapter();
-        }
     }
 
     loadRandomVerse() {
@@ -269,15 +231,6 @@ export class ReaderPage implements OnInit, OnDestroy {
     nextChapter() {
         this.currentChapter++;
         this.loadChapter();
-    }
-
-    onVersionChange(event: CustomEvent) {
-        this.selectedVersion = event.detail.value;
-        if (this.viewMode === 'chapter' && this.currentBook) {
-            this.loadChapter();
-        } else if (this.viewMode === 'search' && this.searchTerm.trim().length > 2) {
-            this.doSearch(this.searchTerm);
-        }
     }
 
     // ─── Busca ─────────────────────────────────────────────────
@@ -369,12 +322,11 @@ export class ReaderPage implements OnInit, OnDestroy {
         let totalWords = 0;
 
         this.verses.forEach(v => {
-            // Limpa pontuação e converte para minúsculas
             const words = v.text
                 .toLowerCase()
                 .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
                 .split(/\s+/)
-                .filter(w => w.length > 2); // Ignora palavras muito curtas
+                .filter(w => w.length > 2);
 
             words.forEach(w => {
                 totalWords++;
@@ -386,7 +338,7 @@ export class ReaderPage implements OnInit, OnDestroy {
 
         const sortedWords = Array.from(wordsMap.entries())
             .sort((a, b) => b[1] - a[1])
-            .slice(0, 15) // Top 15 palavras
+            .slice(0, 15)
             .map(([word, count]) => ({ word, count }));
 
         this.analysis = {
@@ -414,10 +366,6 @@ export class ReaderPage implements OnInit, OnDestroy {
         const text = `${verse.book.name} ${verse.chapter}:${verse.number} — "${verse.text}"`;
         await navigator.clipboard.writeText(text);
         this.showToast('Versículo copiado!', 'success');
-    }
-
-    get versionLabel() {
-        return this.versions.find((v) => v.slug === this.selectedVersion)?.label ?? this.selectedVersion;
     }
 
     private async showToast(message: string, color: string) {

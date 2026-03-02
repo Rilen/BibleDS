@@ -23,34 +23,14 @@
         </ion-buttons>
     </ion-toolbar>
 
-    <!-- Seletor de Versão -->
-    <ion-toolbar class="reader-version-bar">
-        <ion-select [value]="selectedVersion" (ionChange)="onVersionChange($event)" interface="popover" label="Versão:"
-            labelPlacement="start" fill="outline" class="version-select-small">
-            <ion-select-option *ngFor="let v of versions" [value]="v.slug">
-                {{ v.label }}
-            </ion-select-option>
-        </ion-select>
-
-        <ion-chip slot="end" [color]="viewMode === 'search' ? 'secondary' : 'primary'" outline="true">
-            {{ versionLabel }}
+    <!-- Info Barra -->
+    <ion-toolbar class="reader-info-bar">
+        <ion-chip slot="start" color="primary" outline="true">
+            Ave Maria
         </ion-chip>
-
-        <ion-button *ngIf="viewMode === 'chapter' && !loading" fill="clear" color="secondary"
-            (click)="toggleComparison()" slot="end">
-            <ion-icon [name]="compareMode ? 'layers-outline' : 'layers-outline'" slot="icon-only"></ion-icon>
-            <ion-badge *ngIf="compareMode" color="danger" class="btn-badge">ON</ion-badge>
-        </ion-button>
-    </ion-toolbar>
-
-    <!-- Toolbar Comparação (apenas se ativo) -->
-    <ion-toolbar *ngIf="compareMode && viewMode === 'chapter'" class="compare-bar">
-        <ion-select [value]="secondaryVersion" (ionChange)="onSecondaryVersionChange($event)" interface="popover"
-            label="Comparar com:" labelPlacement="start" fill="outline" class="version-select-small">
-            <ion-select-option *ngFor="let v of versions" [value]="v.slug">
-                {{ v.label }}
-            </ion-select-option>
-        </ion-select>
+        <ion-badge slot="end" color="secondary" *ngIf="viewMode === 'chapter'">
+            Cap. {{ currentChapter }}
+        </ion-badge>
     </ion-toolbar>
 
     <!-- Tab Leitura / Pesquisa -->
@@ -104,20 +84,13 @@
         <!-- Versículos com scroll virtual simulado via ngFor + CSS contain -->
         <div *ngIf="!loading && !error" class="verses-container" [style.fontSize.px]="fontSize">
             <div *ngFor="let verse of verses; let i = index; trackBy: trackByNumber" class="verse-item"
-                [class.highlighted]="highlightedVerses.has(verse.number)" [class.compare-view]="compareMode">
+                [class.highlighted]="highlightedVerses.has(verse.number)">
 
                 <span class="verse-number">{{ verse.number }}</span>
 
-                <!-- Versão Principal -->
+                <!-- Versículo -->
                 <div class="verse-content-group">
-                    <span *ngIf="compareMode" class="version-sublabel">{{ selectedVersion.toUpperCase() }}</span>
                     <span class="verse-text">{{ verse.text }}</span>
-
-                    <!-- Versão Secundária (Comparação) -->
-                    <div *ngIf="compareMode && secondaryVerses[i]" class="secondary-content">
-                        <span class="version-sublabel">{{ secondaryVersion.toUpperCase() }}</span>
-                        <span class="verse-text">{{ secondaryVerses[i].text }}</span>
-                    </div>
                 </div>
 
                 <button class="verse-copy-btn" (click)="copyVerse(verse)" title="Copiar versículo">

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import {
     IonContent,
@@ -15,16 +15,12 @@ import {
     IonItem,
     IonBadge,
     IonIcon,
-    IonSelect,
-    IonSelectOption,
     IonSearchbar,
     IonSpinner,
-    IonNote,
     IonButton,
+    IonButtons,
     IonCard,
     IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
     IonChip,
     ToastController,
 } from '@ionic/angular/standalone';
@@ -39,6 +35,7 @@ import {
     refreshOutline,
     informationCircleOutline,
     statsChartOutline,
+    analyticsOutline,
     mailOutline,
     locateOutline,
     medicalOutline,
@@ -58,6 +55,7 @@ import { Book, BibleVersionSlug, BIBLE_VERSIONS } from '../../models/bible.model
     imports: [
         CommonModule,
         FormsModule,
+        RouterLink,
         IonContent,
         IonHeader,
         IonToolbar,
@@ -69,16 +67,12 @@ import { Book, BibleVersionSlug, BIBLE_VERSIONS } from '../../models/bible.model
         IonItem,
         IonBadge,
         IonIcon,
-        IonSelect,
-        IonSelectOption,
         IonSearchbar,
         IonSpinner,
-        IonNote,
         IonButton,
+        IonButtons,
         IonCard,
         IonCardContent,
-        IonCardHeader,
-        IonCardTitle,
         IonChip,
     ],
 })
@@ -89,11 +83,9 @@ export class HomePage implements OnInit, OnDestroy {
     error: string | null = null;
     insight: BibleFact | null = null;
 
-    selectedVersion: BibleVersionSlug = 'nvi';
+    selectedVersion: BibleVersionSlug = 'am';
     selectedTestament: 'VT' | 'NT' | 'ALL' = 'ALL';
     searchTerm = '';
-
-    versions = BIBLE_VERSIONS;
 
     private destroy$ = new Subject<void>();
 
@@ -113,6 +105,7 @@ export class HomePage implements OnInit, OnDestroy {
             refreshOutline,
             informationCircleOutline,
             statsChartOutline,
+            analyticsOutline,
             mailOutline,
             locateOutline,
             medicalOutline,

@@ -1,0 +1,603 @@
+<ion-header [translucent]="true" class="ion-no-border">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Bible Dashboard (DS)</ion-title>
+        <ion-icon slot="end" name="stats-chart-outline"
+            style="margin-right: 16px; font-size: 24px; color: var(--ion-color-primary);"></ion-icon>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <div class="glass-container" *ngIf="!loading && stats">
+
+        <!-- Big Stats -->
+        <ion-grid>
+            <!-- Global Metrics -->
+            <ion-row>
+                <ion-col size="6" size-md="3">
+                    <div class="stat-card">
+                        <span class="label">Livros Analisados</span>
+                        <span class="value">{{ stats.totalBooks }}</span>
+                    </div>
+                </ion-col>
+                <ion-col size="6" size-md="3">
+                    <div class="stat-card">
+                        <span class="label">Palavras Totais (Big Data)</span>
+                        <span class="value">{{ stats.totalWords | number }}</span>
+                    </div>
+                </ion-col>
+                <ion-col size="6" size-md="3">
+                    <div class="stat-card">
+                        <span class="label">Integridade do Dataset</span>
+                        <span class="value health" [style.color]="stats.dataHealthScore > 90 ? '#10b981' : '#f59e0b'">
+                            {{ stats.dataHealthScore }}%
+                        </span>
+                    </div>
+                </ion-col>
+                <ion-col size="6" size-md="3">
+                    <div class="stat-card">
+                        <span class="label">Status do Pipeline</span>
+                        <span class="value status">Ativo</span>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <!-- Sentiment & Testament Distribution -->
+        <ion-card class="glass-card">
+            <ion-card-header>
+                <ion-card-title>Sentimento & Volume por Testamento</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <div class="distribution-bars">
+                    <div class="dist-item">
+                        <div class="dist-label">
+                            <span>Antigo Testamento</span>
+                            <span class="sentiment-badge" [class.pos]="stats.testamentDistribution.vt.sentiment > 0">
+                                Score: {{ stats.testamentDistribution.vt.sentiment }}
+                            </span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill vt"
+                                [style.width.%]="getPercentage(stats.testamentDistribution.vt.words, stats.totalWords)">
+                            </div>
+                        </div>
+                        <div class="dist-sub">
+                            {{ stats.testamentDistribution.vt.books }} livros • {{ stats.testamentDistribution.vt.words
+                            | number }} palavras
+                        </div>
+                    </div>
+
+                    <div class="dist-item">
+                        <div class="dist-label">
+                            <span>Novo Testamento</span>
+                            <span class="sentiment-badge pos">
+                                Score: {{ stats.testamentDistribution.nt.sentiment }}
+                            </span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill nt"
+                                [style.width.%]="getPercentage(stats.testamentDistribution.nt.words, stats.totalWords)">
+                            </div>
+                        </div>
+                        <div class="dist-sub">
+                            {{ stats.testamentDistribution.nt.books }} livros • {{ stats.testamentDistribution.nt.words
+                            | number }} palavras
+                        </div>
+                    </div>
+                </div>
+            </ion-card-content>
+        </ion-card>
+
+        <!-- Lexical Density "Timeline" -->
+        <ion-card class="glass-card">
+            <ion-card-header>
+                <ion-card-title>Série Temporal: Densidade Lexical (Avanço Linear)</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <div class="density-timeline">
+                    <div class="timeline-point" *ngFor="let point of stats.lexicalDensitySeries.slice(0, 73)"
+                        [title]="point.x">
+                        <div class="point-bar" [style.height.px]="point.y * 3"></div>
+                    </div>
+                </div>
+                <div class="timeline-footer">
+                    <span>Gênesis (Início)</span>
+                    <span>... Dataset Sequencial ...</span>
+                    <span>Apocalipse (Fim)</span>
+                </div>
+            </ion-card-content>
+        </ion-card>
+
+        <ion-grid>
+            <ion-row>
+                <!-- Top Books by Volume -->
+                <ion-col size="12" size-md="6">
+                    <ion-card class="glass-card full-height">
+                        <ion-card-header>
+                            <ion-card-title>Top 10 Livros (Volume)</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="v-list">
+                                <div class="v-item" *ngFor="let book of stats.topBooksByVolume; let i = index">
+                                    <div class="v-rank">{{ i + 1 }}</div>
+                                    <div class="v-info">
+                                        <span class="v-name">{{ book.name }}</span>
+                                        <span class="v-val">{{ book.wordCount | number }} palavras</span>
+                                    </div>
+                                    <div class="v-mini-bar"
+                                        [style.width.%]="(book.wordCount / stats.topBooksByVolume[0].wordCount) * 100">
+                                    </div>
+                                </div>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- Complexity Index -->
+                <ion-col size="12" size-md="6">
+                    <ion-card class="glass-card full-height">
+                        <ion-card-header>
+                            <ion-card-title>Índice de Densidade (Palavras/Versículo)</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="v-list">
+                                <div class="v-item" *ngFor="let item of stats.complexityIndex; let i = index">
+                                    <div class="v-rank density">{{ i + 1 }}</div>
+                                    <div class="v-info">
+                                        <span class="v-name">{{ item.name }}</span>
+                                        <span class="v-val">{{ item.score | number:'1.1-1' }} média</span>
+                                    </div>
+                                    <div class="v-mini-bar density"
+                                        [style.width.%]="(item.score / stats.complexityIndex[0].score) * 100"></div>
+                                </div>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- Narrative Timeline (Eras) -->
+                <ion-col size="12">
+                    <ion-card class="glass-card">
+                        <ion-card-header>
+                            <ion-card-title>Linha do Tempo da Narrativa Bíblica</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="eras-timeline">
+                                <div class="era-block" *ngFor="let era of stats.narrativeEras"
+                                    [style.background-color]="era.color" [style.flex]="(era.endYear - era.startYear)"
+                                    [title]="era.name + ' (' + era.startYear + ' a ' + era.endYear + ')'">
+                                    <span class="era-label">{{ era.name }}</span>
+                                </div>
+                            </div>
+                            <div class="era-years">
+                                <span>2000 BC</span>
+                                <span>1500 BC</span>
+                                <span>1000 BC</span>
+                                <span>500 BC</span>
+                                <span>0</span>
+                                <span>100 AD</span>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- BI Executive Dashboard (Analyst's Lens) -->
+                <ion-col size="12">
+                    <ion-card class="glass-card bi-panel">
+                        <ion-card-header>
+                            <div class="bi-header">
+                                <ion-card-title>
+                                    <ion-icon name="briefcase-outline"></ion-icon>
+                                    BI Executive Dashboard
+                                </ion-card-title>
+                                <ion-badge
+                                    [color]="stats.biExecutiveSummary.relationalConsistency > 90 ? 'success' : 'warning'">
+                                    Mining Status: {{ stats.biExecutiveSummary.dataMiningStatus }}
+                                </ion-badge>
+                            </div>
+                            <ion-card-subtitle>Actionable Insights & Inteligência de Negócios
+                                Bíblicos</ion-card-subtitle>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <ion-row>
+                                <!-- Key Performance Indicators (KPIs) -->
+                                <ion-col size="12" size-md="4">
+                                    <div class="bi-kpi-container">
+                                        <div class="bi-kpi">
+                                            <div class="kpi-circle">
+                                                <span class="kpi-value">{{
+                                                    stats.biExecutiveSummary.relationalConsistency }}%</span>
+                                            </div>
+                                            <div class="kpi-label">Consistência Relacional (VT/NT)</div>
+                                        </div>
+                                        <div class="bi-kpi">
+                                            <div class="kpi-circle secondary">
+                                                <span class="kpi-value">{{ stats.biExecutiveSummary.wisdomScore |
+                                                    number:'1.1-1' }}</span>
+                                            </div>
+                                            <div class="kpi-label">Wisdom Score Index</div>
+                                        </div>
+                                    </div>
+                                </ion-col>
+
+                                <!-- Actionable Insights Table -->
+                                <ion-col size="12" size-md="8">
+                                    <div class="insights-table-container">
+                                        <table class="bi-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Insight de Negócio/Vida</th>
+                                                    <th>Princípio Extraído</th>
+                                                    <th>Impacto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let insight of stats.biExecutiveSummary.actionableInsights">
+                                                    <td><strong>{{ insight.title }}</strong></td>
+                                                    <td>{{ insight.principle }}</td>
+                                                    <td>
+                                                        <ion-badge
+                                                            [color]="insight.impact === 'Crítico' ? 'danger' : 'primary'">
+                                                            {{ insight.impact }}
+                                                        </ion-badge>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+                <ion-col size="12">
+                    <ion-card class="glass-card hyper-panel">
+                        <ion-card-header>
+                            <ion-card-title>
+                                <ion-icon name="infinite-outline"></ion-icon>
+                                Duke Hyper-Analytics Lab
+                            </ion-card-title>
+                            <ion-card-subtitle>Estruturação de Dados Não Estruturados & Hipertexto</ion-card-subtitle>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <ion-row>
+                                <!-- Geo-Accuracy & Entropy -->
+                                <ion-col size="12" size-md="4">
+                                    <div class="hyper-stat-group">
+                                        <div class="h-stat">
+                                            <span class="h-label">Precisão Geográfica</span>
+                                            <div class="h-value-row">
+                                                <span class="h-value">{{ stats.deepAnalyticInsights.geographicAccuracy
+                                                    }}%</span>
+                                                <ion-badge color="success">Validado</ion-badge>
+                                            </div>
+                                            <small>Cruzamento narrativo vs base arqueológica</small>
+                                        </div>
+                                        <div class="h-stat">
+                                            <span class="h-label">Entropia Narrativa</span>
+                                            <span class="h-value">{{ stats.deepAnalyticInsights.narrativeEntropy |
+                                                number:'1.1-2' }}</span>
+                                            <small>Complexidade de estruturação de dados</small>
+                                        </div>
+                                    </div>
+                                </ion-col>
+
+                                <!-- Conceptual Hyperlinks -->
+                                <ion-col size="12" size-md="8">
+                                    <div class="hyper-stat-group">
+                                        <span class="h-label">Nuvem de Conceitos Relacionais (Hyper-Mapping)</span>
+                                        <div class="concept-cloud">
+                                            <div class="concept-tag"
+                                                *ngFor="let concept of stats.deepAnalyticInsights.conceptLinks"
+                                                [style.background]="concept.color">
+                                                <span class="c-name">{{ concept.concept }}</span>
+                                                <span class="c-count">{{ concept.links }} links</span>
+                                            </div>
+                                        </div>
+                                        <div class="hyper-density-indicator">
+                                            <div class="density-bar">
+                                                <div class="density-fill"
+                                                    [style.width.%]="stats.deepAnalyticInsights.hypertextDensity * 2">
+                                                </div>
+                                            </div>
+                                            <div class="density-label">
+                                                Densidade de Hipertexto: {{ stats.deepAnalyticInsights.hypertextDensity
+                                                | number:'1.1-1' }} conexões/k-palavras
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+                <ion-col size="12">
+                    <ion-card class="glass-card architecture-panel">
+                        <ion-card-header>
+                            <ion-card-title>Arquitetura de Dados & Governança</ion-card-title>
+                            <ion-card-subtitle>Análise de Schema Narrativo e Regras de Negócio</ion-card-subtitle>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <ion-row>
+                                <!-- Entity Mapping: Who and Where -->
+                                <ion-col size="12" size-md="4">
+                                    <div class="arch-stat-box">
+                                        <div class="arch-label">Mapeamento de Entidades</div>
+                                        <div class="entity-chips">
+                                            <div class="chip">
+                                                <ion-icon name="people-outline"></ion-icon>
+                                                <span>{{ stats.architectureMetrics.entityMapping.agents | number }}
+                                                    Agentes</span>
+                                            </div>
+                                            <div class="chip">
+                                                <ion-icon name="location-outline"></ion-icon>
+                                                <span>{{ stats.architectureMetrics.entityMapping.locations | number }}
+                                                    Locais</span>
+                                            </div>
+                                            <div class="chip">
+                                                <ion-icon name="cube-outline"></ion-icon>
+                                                <span>{{ stats.architectureMetrics.entityMapping.objects | number }}
+                                                    Objetos</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ion-col>
+
+                                <!-- Governance: Business Rules -->
+                                <ion-col size="12" size-md="4">
+                                    <div class="arch-stat-box">
+                                        <div class="arch-label">Compliance de Regras (Governance)</div>
+                                        <div class="governance-bar">
+                                            <div class="bar-fill"
+                                                [style.width.%]="stats.architectureMetrics.governanceScore * 10"></div>
+                                        </div>
+                                        <div class="governance-value">{{ stats.architectureMetrics.governanceScore |
+                                            number:'1.1-2' }} Pts</div>
+                                        <small>Densidade de Mandamentos/Leis por k-palavras</small>
+                                    </div>
+                                </ion-col>
+
+                                <!-- Normalization Stage -->
+                                <ion-col size="12" size-md="4">
+                                    <div class="arch-stat-box">
+                                        <div class="arch-label">Estado de Normalização</div>
+                                        <div class="normal-form">{{ stats.architectureMetrics.structuralNormalForm }}
+                                        </div>
+                                        <div class="pattern-indicator">
+                                            <ion-icon name="git-merge-outline"></ion-icon>
+                                            Padrões Coesos Detectados
+                                        </div>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- Data Mining Word Cloud (BI Focus) -->
+                <ion-col size="12">
+                    <ion-card class="glass-card word-cloud-card">
+                        <ion-card-header>
+                            <ion-card-title>
+                                <ion-icon name="cloud-outline"></ion-icon>
+                                Nuvem de Mineração de Termos
+                            </ion-card-title>
+                            <ion-card-subtitle>Extração de Frequência Lexical & Big Data Insights</ion-card-subtitle>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="word-cloud-container">
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '2.2rem', 'opacity': 1, 'color': '#f8fafc'}">SENHOR</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.8rem', 'opacity': 0.9, 'color': '#3b82f6'}">ISRAEL</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.5rem', 'opacity': 0.8, 'color': '#10b981'}">AMOR</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.3rem', 'opacity': 0.7, 'color': '#a855f7'}">REINO</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.1rem', 'opacity': 0.6, 'color': '#f59e0b'}">PAZ</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.4rem', 'opacity': 0.85, 'color': '#ef4444'}">PECADOS
+                                </div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.0rem', 'opacity': 0.5, 'color': '#94a3b8'}">TERRA</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.6rem', 'opacity': 0.9, 'color': '#38bdf8'}">JESUS</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.2rem', 'opacity': 0.75, 'color': '#fb7185'}">GRAÇA</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '0.9rem', 'opacity': 0.4, 'color': '#64748b'}">VIDA</div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.3rem', 'opacity': 0.8, 'color': '#a78bfa'}">SABEDORIA
+                                </div>
+                                <div class="word-tag"
+                                    [ngStyle]="{'font-size': '1.5rem', 'opacity': 0.85, 'color': '#fbbf24'}">JUSTIÇA
+                                </div>
+                            </div>
+                            <div class="cloud-footer">
+                                <small>*Análise baseada em 31.102 versículos processados no pipeline de BI.</small>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+                <ion-col size="12">
+                    <ion-card class="glass-card ai-lab-panel">
+                        <ion-card-header>
+                            <ion-card-title>
+                                <ion-icon name="flask-outline"></ion-icon>
+                                Laboratório de IA & PLN
+                            </ion-card-title>
+                            <ion-card-subtitle>Mineração de Padrões e Modelagem de Tópicos (LDA)</ion-card-subtitle>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <ion-row>
+                                <!-- Topic Modeling (LDA) -->
+                                <ion-col size="12" size-md="6">
+                                    <div class="nlp-box">
+                                        <div class="nlp-label">Distribuição de Tópicos Dominantes</div>
+                                        <div class="topic-bars">
+                                            <div class="topic-item"
+                                                *ngFor="let topic of stats.nlpInsights.topicDistribution">
+                                                <div class="topic-info">
+                                                    <span>{{ topic.topic }}</span>
+                                                    <span>{{ topic.weight | number:'1.0-1' }}%</span>
+                                                </div>
+                                                <div class="topic-progress">
+                                                    <div class="progress-fill" [style.width.%]="topic.weight"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ion-col>
+
+                                <!-- Stylometrics & Authorship -->
+                                <ion-col size="12" size-md="6">
+                                    <div class="nlp-box">
+                                        <div class="nlp-label">Insights Experimentais da IA</div>
+                                        <div class="ai-metrics-grid">
+                                            <div class="ai-metric">
+                                                <div class="m-value">{{ stats.nlpInsights.stylometricDiversity |
+                                                    number:'1.1-1' }}</div>
+                                                <div class="m-label">Diversidade Estilométrica (Autoria)</div>
+                                                <small>Indica múltiplas mãos na composição</small>
+                                            </div>
+                                            <div class="ai-metric highlight">
+                                                <div class="m-value">{{ stats.nlpInsights.archaeologicalCorrelation }}%
+                                                </div>
+                                                <div class="m-label">Match Arqueológico</div>
+                                                <small>Validação via Cross-Referencing Histórico</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="nlp-footer">
+                                            <ion-badge color="secondary">Transformer Model v1.2</ion-badge>
+                                            <ion-badge color="tertiary">LDA Topic Clustering</ion-badge>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- Seasonality (Historical Activity) -->
+                <ion-col size="12">
+                    <ion-card class="glass-card">
+                        <ion-card-header>
+                            <ion-card-title>Sazonalidade: Densidade de Produção Literária</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="seasonality-chart">
+                                <div class="season-point" *ngFor="let s of stats.productionDensity" [title]="s.century">
+                                    <div class="season-bar" [style.height.%]="(s.volume / 80000) * 100"></div>
+                                    <span class="season-label">{{ s.century }}</span>
+                                </div>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- Lifespan Gantt Chart (Patriarchs: Born & Died) -->
+                <ion-col size="12">
+                    <ion-card class="glass-card longevity-panel">
+                        <ion-card-header>
+                            <ion-card-title>
+                                <ion-icon name="hourglass-outline"></ion-icon>
+                                Cronologia de Patriarcas (Nascimento x Morte)
+                            </ion-card-title>
+                            <ion-card-subtitle>Análise de "Lifespan" e Sazonalidade Biológica (AM: Anno
+                                Mundi)</ion-card-subtitle>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="lifespan-chart">
+                                <div class="lifespan-row" *ngFor="let p of stats.lifespanTimeline">
+                                    <div class="p-name">{{ p.name }}</div>
+                                    <div class="p-track">
+                                        <div class="p-bar" [style.left.%]="(p.born / 2600) * 100"
+                                            [style.width.%]="(p.duration / 2600) * 100"
+                                            [class.ancient]="p.duration > 800" [class.modern]="p.duration < 200">
+                                            <span class="p-duration">{{ p.duration }} anos</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-years">{{ p.born }} - {{ p.died }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Seasonality Analysis (The Decline) -->
+                            <div class="longevity-seasonality">
+                                <div class="season-label">Sazonalidade do Declínio de Longevidade (Trend-line)</div>
+                                <div class="season-grid">
+                                    <div class="season-item" *ngFor="let p of stats.lifespanTimeline">
+                                        <div class="trend-bar" [style.height.%]="(p.duration / 1000) * 100"></div>
+                                    </div>
+                                </div>
+                                <div class="trend-info">
+                                    <span>Era Primitiva (900+ anos)</span>
+                                    <span>→</span>
+                                    <span>Pós-Dilúvio (Redução Drástica)</span>
+                                    <span>→</span>
+                                    <span>Sazonalidade Estabilizada (~120 anos)</span>
+                                </div>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- Relational Map (Knowledge Graph) -->
+                <ion-col size="12" size-md="6">
+                    <ion-card class="glass-card full-height">
+                        <ion-card-header>
+                            <ion-card-title>Grafo Relacional (Network)</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="network-graph">
+                                <div class="node central">JESUS</div>
+                                <div class="node-link" *ngFor="let ref of stats.crossReferences; let i = index"
+                                    [style.transform]="'rotate(' + (i * 60) + 'deg)'">
+                                    <div class="line" [style.width.px]="ref.weight"></div>
+                                    <div class="node-label" [style.transform]="'rotate(' + (i * -60) + 'deg)'">{{
+                                        ref.source }} ↔ {{ ref.target }}</div>
+                                </div>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+
+                <!-- Genealogy / Lineage -->
+                <ion-col size="12" size-md="6">
+                    <ion-card class="glass-card full-height">
+                        <ion-card-header>
+                            <ion-card-title>Linhagem de Adão (Relacional)</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="genealogy-tree">
+                                <div class="gen-node root">ADÃO</div>
+                                <div class="gen-branch">
+                                    <div class="gen-node">ABEL</div>
+                                    <div class="gen-node highlight">SETE</div>
+                                    <div class="gen-node secondary">CAIM</div>
+                                </div>
+                                <div class="gen-branch sub">
+                                    <div class="gen-node">ENOS</div>
+                                    <div class="gen-node">QUENÃ</div>
+                                    <div class="gen-node important">NOÉ</div>
+                                </div>
+                            </div>
+                            <p class="chart-info">* Mapeamento de entidades Gênesis 4-11.</p>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="loading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Minerando dataset bíblico...</p>
+    </div>
+</ion-content>
