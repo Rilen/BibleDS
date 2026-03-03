@@ -15,185 +15,28 @@ sidebar: false
   </header>
 
 ```js
-const curiosidadesList = [
-  { nome: "Aarão", desc: "Irmão de Moisés, foi o primeiro sumo sacerdote de Israel. (Êxodo 4:14)", letra: "A" },
-  { nome: "Abel", desc: "Segundo filho de Adão e Eva, foi o primeiro a ser assassinado por seu irmão Caim. (Gênesis 4:2-8)", letra: "A" },
-  { nome: "Abigail", desc: "Mulher sábia e prudente, esposa de Nabal, que depois de sua morte se casou com o rei Davi. (1 Samuel 25)", letra: "A" },
-  { nome: "Abner", desc: "Comandante do exército de Saul e, posteriormente, de Isbosete, filho de Saul. (1 Samuel 14:50)", letra: "A" },
-  { nome: "Abraão", desc: "Considerado o pai da fé, sua obediência o levou a um pacto com Deus, que prometeu fazer dele uma grande nação. (Gênesis 12)", letra: "A" },
-  { nome: "Absalão", desc: "Filho do rei Davi, conhecido por sua beleza, que liderou uma rebelião contra o próprio pai. (2 Samuel 13-18)", letra: "A" },
-  { nome: "Acabe", desc: "O sétimo rei de Israel, famoso por sua maldade e por ser influenciado por sua esposa, Jezabel. (1 Reis 16:29)", letra: "A" },
-  { nome: "Adão", desc: "O primeiro homem criado por Deus. (Gênesis 2:7)", letra: "A" },
-  { nome: "Adonias", desc: "Filho de Davi que tentou usurpar o trono antes de seu irmão Salomão ser ungido rei. (1 Reis 1)", letra: "A" },
-  { nome: "Ágabo", desc: "Profeta do Novo Testamento que previu uma grande fome e a prisão de Paulo. (Atos 11:28)", letra: "A" },
-  { nome: "Ageu", desc: "Profeta que incentivou os judeus a reconstruir o Templo de Jerusalém após o exílio babilônico. (Livro de Ageu)", letra: "A" },
-  { nome: "Amós", desc: "Pastor de ovelhas que foi chamado por Deus para profetizar contra a injustiça social em Israel. (Amós 1:1)", letra: "A" },
-  { nome: "Ana", desc: "Mulher que clamou a Deus por um filho e se tornou a mãe do profeta Samuel. (1 Samuel 1)", letra: "A" },
-  { nome: "Ananias", desc: "Discípulo de Damasco que foi enviado por Deus para curar a cegueira de Saulo de Tarso. (Atos 9:10-18)", letra: "A" },
-  { nome: "André", desc: "Um dos doze apóstolos de Jesus e irmão de Simão Pedro. (João 1:40)", letra: "A" },
-  { nome: "Apolo", desc: "Companheiro de Priscila e Áquila, era um eloquente pregador do evangelho. (Atos 18:24)", letra: "A" },
-  { nome: "Áquila", desc: "Fabricante de tendas, marido de Priscila, que trabalhou com o apóstolo Paulo. (Atos 18:2)", letra: "A" },
-  { nome: "Asafe", desc: "Um dos principais músicos do rei Davi, que escreveu vários salmos. (1 Crônicas 6:39)", letra: "A" },
-  { nome: "Atalia", desc: "Filha de Acabe e Jezabel, que reinou sobre Judá por seis anos e tentou exterminar a linhagem real. (2 Reis 11)", letra: "A" },
-  { nome: "Balaão", desc: "Profeta que foi contratado para amaldiçoar Israel, mas só conseguia proferir bênçãos. (Números 22-24)", letra: "B" },
-  { nome: "Baraque", desc: "Líder militar israelita que, sob a direção da profetisa Débora, derrotou o exército cananeu. (Juízes 4)", letra: "B" },
-  { nome: "Barnabé", desc: "Levita de Chipre, companheiro de Paulo em sua primeira viagem missionária. (Atos 4:36)", letra: "B" },
-  { nome: "Bartimeu", desc: "O cego que foi curado por Jesus à entrada de Jericó. (Marcos 10:46)", letra: "B" },
-  { nome: "Bartolomeu", desc: "Um dos doze apóstolos, também conhecido como Natanael. (Mateus 10:3)", letra: "B" },
-  { nome: "Barrabás", desc: "O prisioneiro que a multidão escolheu para ser libertado em vez de Jesus. (Mateus 27:15-26)", letra: "B" },
-  { nome: "Bate-Seba", desc: "Esposa de Urias, que cometeu adultério com o rei Davi e mais tarde se tornou a mãe de Salomão. (2 Samuel 11)", letra: "B" },
-  { nome: "Belsazar", desc: "Rei da Babilônia durante a queda do império, que viu a 'mão a escrever na parede'. (Daniel 5)", letra: "B" },
-  { nome: "Benjamim", desc: "O filho mais novo de Jacó e Raquel, e fundador de uma das doze tribos de Israel. (Gênesis 35:18)", letra: "B" },
-  { nome: "Boaz", desc: "Rico proprietário de terras em Belém, que se casou com Rute e se tornou bisavô do rei Davi. (Rute 2-4)", letra: "B" },
-  { nome: "Caifás", desc: "Sumo sacerdote judeu que presidiu o julgamento de Jesus. (Mateus 26:57)", letra: "C" },
-  { nome: "Caim", desc: "O filho mais velho de Adão e Eva, que se tornou lavrador e assassinou seu irmão Abel. (Gênesis 4:1)", letra: "C" },
-  { nome: "Calebe", desc: "Um dos doze espias enviados por Moisés, conhecido por sua fé e coragem para conquistar a Terra Prometida. (Números 13-14)", letra: "C" },
-  { nome: "Cão", desc: "Um dos três filhos de Noé, cujos descendentes povoaram a África e a terra de Canaã. (Gênesis 9:18)", letra: "C" },
-  { nome: "Cleofas", desc: "Um dos discípulos de Jesus que o encontrou no caminho de Emaús após a ressurreição. (Lucas 24:18)", letra: "C" },
-  { nome: "Cornélio", desc: "O primeiro gentio a se converter ao cristianismo, um centurião romano. (Atos 10)", letra: "C" },
-  { nome: "Ciro", desc: "Rei da Pérsia que permitiu que os judeus exilados voltassem a Jerusalém e reconstruíssem o templo. (2 Crônicas 36:22-23)", letra: "C" },
-  { nome: "Dalila", desc: "Mulher filisteia que traiu o juiz Sansão e entregou-o aos seus inimigos. (Juízes 16)", letra: "D" },
-  { nome: "Daniel", desc: "Profeta judeu levado para o cativeiro na Babilônia, que se tornou conselheiro de reis. (Daniel 1-12)", letra: "D" },
-  { nome: "Dario", desc: "Rei da Pérsia que reinou durante o tempo do profeta Daniel e o jogou na cova dos leões. (Daniel 6)", letra: "D" },
-  { nome: "Davi", desc: "O pastor que derrotou o gigante Golias e se tornou o segundo e mais famoso rei de Israel. (1 Samuel 17)", letra: "D" },
-  { nome: "Débora", desc: "Profetisa, juíza e líder militar de Israel, a única juíza mulher mencionada na Bíblia. (Juízes 4-5)", letra: "D" },
-  { nome: "Demétrio", desc: "Um ourives de Éfeso que liderou um motim contra Paulo por temer perder seu negócio de ídolos de Ártemis. (Atos 19:24-29)", letra: "D" },
-  { nome: "Diná", desc: "Filha de Jacó e Lia, cuja história trágica levou a um massacre em Siquém. (Gênesis 34)", letra: "D" },
-  { nome: "Diotrefes", desc: "Um líder da igreja que se opunha à autoridade de João e não acolhia os irmãos. (3 João 1:9-10)", letra: "D" },
-  { nome: "Dorcas", desc: "Também conhecida como Tabita, uma discípula em Jope conhecida por suas boas obras e caridade, ressuscitada por Pedro. (Atos 9:36)", letra: "D" },
-  { nome: "Elias", desc: "Um dos maiores profetas do Antigo Testamento, que desafiou os profetas de Baal no Monte Carmelo. (1 Reis 18)", letra: "E" },
-  { nome: "Eliseu", desc: "Discípulo e sucessor do profeta Elias, conhecido por realizar muitos milagres. (2 Reis 2)", letra: "E" },
-  { nome: "Enoque", desc: "Homem que 'andou com Deus' e foi transladado para o céu sem ter experimentado a morte. (Gênesis 5:24)", letra: "E" },
-  { nome: "Epafras", desc: "Discípulo de Paulo e co-fundador da igreja em Colossos. (Colossenses 1:7)", letra: "E" },
-  { nome: "Esaú", desc: "Irmão gêmeo de Jacó, que vendeu seu direito de primogenitura por um prato de lentilhas. (Gênesis 25:29-34)", letra: "E" },
-  { nome: "Esdras", desc: "Sacerdote e escriba que liderou o segundo grupo de exilados de volta a Jerusalém e instituiu reformas religiosas. (Livro de Esdras)", letra: "E" },
-  { nome: "Estêvão", desc: "Um dos sete diáconos da igreja primitiva, o primeiro mártir cristão. (Atos 6-7)", letra: "E" },
-  { nome: "Ester", desc: "Uma jovem judia que se tornou rainha da Pérsia e salvou seu povo do extermínio. (Livro de Ester)", letra: "E" },
-  { nome: "Eva", desc: "A primeira mulher criada por Deus, companheira de Adão. (Gênesis 2:22)", letra: "E" },
-  { nome: "Ezequiel", desc: "Profeta levado para o cativeiro na Babilônia, que teve visões sobre a glória de Deus e a restauração de Israel. (Livro de Ezequiel)", letra: "E" },
-  { nome: "Faraó", desc: "Título dos reis do Egito, adversário de Moisés. (Êxodo 5-14)", letra: "F" },
-  { nome: "Febe", desc: "Diaconisa da igreja em Cencréia, elogiada por Paulo por sua ajuda a muitos cristãos. (Romanos 16:1-2)", letra: "F" },
-  { nome: "Felipe (Apóstolo)", desc: "Um dos doze apóstolos, que trouxe Natanael a Jesus. (João 1:43-46)", letra: "F" },
-  { nome: "Felipe (Evangelista)", desc: "Um dos sete diáconos, que evangelizou em Samaria e converteu o eunuco etíope. (Atos 8)", letra: "F" },
-  { nome: "Félix", desc: "Governador romano da Judeia que prendeu o apóstolo Paulo. (Atos 23-24)", letra: "F" },
-  { nome: "Filemom", desc: "Um líder da igreja em Colossos, a quem Paulo escreveu uma carta pedindo para perdoar seu escravo fugitivo, Onésimo. (Livro de Filemom)", letra: "F" },
-  { nome: "Fineias", desc: "Filho de Eleazar e neto de Arão, que serviu como sacerdote e foi um líder religioso zeloso. (Êxodo 6:25)", letra: "F" },
-  { nome: "Gabriel", desc: "Anjo mensageiro de Deus, que apareceu a Daniel, a Zacarias e a Maria. (Daniel 8:16; Lucas 1)", letra: "G" },
-  { nome: "Gamaliel", desc: "Um fariseu respeitado e mestre da lei, que foi professor do apóstolo Paulo. (Atos 5:34)", letra: "G" },
-  { nome: "Geazi", desc: "Servo do profeta Eliseu, cuja ganância o levou a ser punido com lepra. (2 Reis 5)", letra: "G" },
-  { nome: "Gideão", desc: "Juiz de Israel que, com apenas 300 homens, venceu o exército dos midianitas. (Juízes 6-8)", letra: "G" },
-  { nome: "Golias", desc: "O gigante filisteu que foi morto por Davi com uma funda e uma pedra. (1 Samuel 17)", letra: "G" },
-  { nome: "Gomer", desc: "A esposa infiel do profeta Oseias, cujo casamento simbolizava a relação de Deus com Israel. (Oseias 1:2)", letra: "G" },
-  { nome: "Habacuque", desc: "Profeta que questionou a Deus sobre a injustiça em Israel e a ascensão da Babilônia. (Livro de Habacuque)", letra: "H" },
-  { nome: "Hagar", desc: "Serva egípcia de Sara, que se tornou mãe de Ismael. (Gênesis 16)", letra: "H" },
-  { nome: "Hamã", desc: "Vilão do livro de Ester, um oficial persa que tentou exterminar os judeus. (Ester 3)", letra: "H" },
-  { nome: "Herodes, o Grande", desc: "Rei da Judeia que ordenou a matança dos meninos em Belém na tentativa de matar o Messias. (Mateus 2:16)", letra: "H" },
-  { nome: "Hulda", desc: "Profetisa que viveu em Jerusalém no tempo do rei Josias. (2 Reis 22:14-20)", letra: "H" },
-  { nome: "Isabel", desc: "Mulher de Zacarias e mãe de João Batista, prima de Maria, mãe de Jesus. (Lucas 1)", letra: "I" },
-  { nome: "Isaque", desc: "Filho de Abraão e Sara, nascido quando ambos já eram idosos, o filho prometido. (Gênesis 21)", letra: "I" },
-  { nome: "Isaías", desc: "Um dos profetas mais importantes, autor do livro que leva seu nome, que profetizou a vinda do Messias. (Livro de Isaías)", letra: "I" },
-  { nome: "Isbosete", desc: "Filho do rei Saul, que reinou brevemente sobre Israel após a morte de seu pai, em oposição a Davi. (2 Samuel 2:8)", letra: "I" },
-  { nome: "Ismael", desc: "Filho de Abraão com a serva Hagar, pai dos ismaelitas. (Gênesis 16:15)", letra: "I" },
-  { nome: "Jacó", desc: "Neto de Abraão, que teve o nome mudado para Israel e se tornou o pai das doze tribos. (Gênesis 27)", letra: "J" },
-  { nome: "Jael", desc: "Mulher que matou o general cananeu Sísera, cravando uma estaca em sua cabeça. (Juízes 4:17-22)", letra: "J" },
-  { nome: "Jafé", desc: "Um dos três filhos de Noé, cujos descendentes se espalharam pela Europa e Ásia. (Gênesis 10:1-2)", letra: "J" },
-  { nome: "Jefté", desc: "Juiz de Israel que fez um voto a Deus para vencer os amonitas. (Juízes 11)", letra: "J" },
-  { nome: "Jeremias", desc: "O 'profeta chorão', que profetizou a destruição de Jerusalém e o cativeiro babilônico. (Livro de Jeremias)", letra: "J" },
-  { nome: "Jesus", desc: "O Messias, Filho de Deus, cuja vida, morte e ressurreição são a base da fé cristã. (Todos os Evangelhos)", letra: "J" },
-  { nome: "Jezabel", desc: "Princesa fenícia, esposa do rei Acabe, conhecida por sua idolatria e perseguição aos profetas. (1 Reis 16:31)", letra: "J" },
-  { nome: "Jó", desc: "Homem justo que foi testado por Satanás com o sofrimento, mas permaneceu fiel a Deus. (Livro de Jó)", letra: "J" },
-  { nome: "Joabe", desc: "Comandante do exército do rei Davi, um guerreiro feroz e estrategista militar. (2 Samuel 2:13)", letra: "J" },
-  { nome: "João", desc: "Um dos doze apóstolos, o 'discípulo amado', autor de um dos evangelhos e do Apocalipse. (João 13:23)", letra: "J" },
-  { nome: "João Batista", desc: "Profeta que preparou o caminho para Jesus, batizando-o no rio Jordão. (Mateus 3)", letra: "J" },
-  { nome: "Jonas", desc: "Profeta que tentou fugir de Deus e foi engolido por um grande peixe. (Livro de Jonas)", letra: "J" },
-  { nome: "Jônatas", desc: "Filho do rei Saul, conhecido por sua amizade leal com Davi. (1 Samuel 18)", letra: "J" },
-  { nome: "Joquebede", desc: "Mãe de Moisés, Arão e Miriã. (Êxodo 6:20)", letra: "J" },
-  { nome: "José", desc: "Filho preferido de Jacó, vendido como escravo, que se tornou governador do Egito. (Gênesis 37-50)", letra: "J" },
-  { nome: "José (Pai de Jesus)", desc: "Marido de Maria, um carpinteiro justo que criou Jesus como seu próprio filho. (Mateus 1:19)", letra: "J" },
-  { nome: "Josias", desc: "Um dos últimos reis de Judá, que promoveu uma grande reforma religiosa. (2 Reis 22)", letra: "J" },
-  { nome: "Josué", desc: "Sucessor de Moisés, que liderou os israelitas na conquista da Terra Prometida. (Livro de Josué)", letra: "J" },
-  { nome: "Judas Iscariotes", desc: "Um dos doze apóstolos, famoso por trair Jesus por 30 moedas de prata. (Mateus 26:14)", letra: "J" },
-  { nome: "Labão", desc: "Tio de Jacó e pai de Lia e Raquel, que enganou Jacó em relação ao seu casamento. (Gênesis 29)", letra: "L" },
-  { nome: "Lameque", desc: "Descendente de Caim, conhecido por sua arrogância e por ser o primeiro polígamo mencionado na Bíblia. (Gênesis 4:19)", letra: "L" },
-  { nome: "Lázaro", desc: "Irmão de Marta e Maria, que foi ressuscitado por Jesus após quatro dias de sua morte. (João 11)", letra: "L" },
-  { nome: "Levi", desc: "Filho de Jacó e Lia, e pai dos levitas, a tribo sacerdotal. Também o nome original do apóstolo Mateus. (Gênesis 29:34)", letra: "L" },
-  { nome: "Lia", desc: "Filha mais velha de Labão, a primeira esposa de Jacó. (Gênesis 29:16)", letra: "L" },
-  { nome: "Lídia", desc: "Vendedora de púrpura de Tiatira, que se tornou a primeira convertida ao cristianismo na Europa. (Atos 16:14)", letra: "L" },
-  { nome: "Ló", desc: "Sobrinho de Abraão, que foi salvo da destruição de Sodoma e Gomorra. (Gênesis 19)", letra: "L" },
-  { nome: "Lucas", desc: "Médico e companheiro de Paulo, autor do Evangelho de Lucas e do livro de Atos dos Apóstolos. (Colossenses 4:14)", letra: "L" },
-  { nome: "Malaquias", desc: "O último profeta do Antigo Testamento. (Livro de Malaquias)", letra: "M" },
-  { nome: "Manassés", desc: "O 14º rei de Judá, conhecido por sua idolatria e por sacrificar seus filhos. (2 Reis 21)", letra: "M" },
-  { nome: "Manoá", desc: "Pai do juiz Sansão. (Juízes 13)", letra: "M" },
-  { nome: "Mardoqueu", desc: "Primo e pai adotivo da rainha Ester, que expôs um complô para matar o rei e ajudou a salvar os judeus. (Ester 2:7)", letra: "M" },
-  { nome: "Marcos", desc: "Autor do Evangelho de Marcos. (Atos 12:12)", letra: "M" },
-  { nome: "Maria", desc: "A mãe de Jesus. (Lucas 1)", letra: "M" },
-  { nome: "Maria Madalena", desc: "Uma das seguidoras mais fiéis de Jesus e a primeira pessoa a vê-lo ressuscitado. (Mateus 27:56)", letra: "M" },
-  { nome: "Marta", desc: "Irmã de Lázaro e Maria, conhecida por seu serviço a Jesus em sua casa. (Lucas 10:38-42)", letra: "M" },
-  { nome: "Mateus", desc: "Um dos doze apóstolos, que era cobrador de impostos antes de segui-lo. (Mateus 9:9)", letra: "M" },
-  { nome: "Matusalém", desc: "Filho de Enoque e avô de Noé, vivendo 969 anos. (Gênesis 5:27)", letra: "M" },
-  { nome: "Mefibosete", desc: "Filho de Jônatas e neto do rei Saul, que foi tratado com bondade por Davi. (2 Samuel 9)", letra: "M" },
-  { nome: "Melquisedeque", desc: "Sacerdote e rei de Salém, que abençoou Abraão. (Gênesis 14:18-20)", letra: "M" },
-  { nome: "Miriã", desc: "Irmã de Moisés e Arão, uma profetisa que liderou cânticos de vitória. (Êxodo 15:20)", letra: "M" },
-  { nome: "Moisés", desc: "O profeta que libertou os israelitas da escravidão no Egito e recebeu os Dez Mandamentos. (Êxodo)", letra: "M" },
-  { nome: "Naamã", desc: "Um general sírio que foi curado da lepra pelo profeta Eliseu. (2 Reis 5)", letra: "N" },
-  { nome: "Nabal", desc: "Um homem rico e insensato, marido de Abigail, que insultou Davi. (1 Samuel 25)", letra: "N" },
-  { nome: "Nabote", desc: "Dono de uma vinha que foi injustamente assassinado por ordem de Jezabel. (1 Reis 21)", letra: "N" },
-  { nome: "Nabucodonosor", desc: "O rei da Babilônia que conquistou e destruiu Jerusalém. (2 Reis 24-25)", letra: "N" },
-  { nome: "Natã", desc: "O profeta que repreendeu o rei Davi por seu pecado com Bate-Seba. (2 Samuel 12)", letra: "N" },
-  { nome: "Natanael", desc: "Um dos doze apóstolos de Jesus, também chamado de Bartolomeu. (João 1:45)", letra: "N" },
-  { nome: "Neemias", desc: "O copeiro do rei Artaxerxes que liderou a reconstrução dos muros de Jerusalém. (Neemias)", letra: "N" },
-  { nome: "Nicodemos", desc: "Um fariseu e membro do Sinédrio que foi secretamente procurar Jesus. (João 3)", letra: "N" },
-  { nome: "Noemi", desc: "Sogra de Rute, que a acompanhou de volta para Belém. (Rute)", letra: "N" },
-  { nome: "Noé", desc: "O homem que construiu a arca para salvar sua família e os animais do dilúvio. (Gênesis 6)", letra: "N" },
-  { nome: "Obadias", desc: "Um dos doze profetas menores, que profetizou a queda de Edom. (Obadias)", letra: "O" },
-  { nome: "Onésimo", desc: "Escravo fugitivo de Filemom, que se converteu ao cristianismo através de Paulo. (Filemom)", letra: "O" },
-  { nome: "Onesíforo", desc: "Cristão de Éfeso que apoiou o apóstolo Paulo quando ele estava na prisão. (2 Timóteo 1)", letra: "O" },
-  { nome: "Oseias", desc: "Profeta cujo casamento serviu de metáfora para a relação de Deus com Israel. (Oseias)", letra: "O" },
-  { nome: "Paulo", desc: "O apóstolo dos gentios, que antes era conhecido como Saulo de Tarso. (Atos 9)", letra: "P" },
-  { nome: "Pedro", desc: "Um dos doze apóstolos, pescador que se tornou um dos líderes da igreja primitiva. (Mateus 4)", letra: "P" },
-  { nome: "Pilatos", desc: "O governador romano que condenou Jesus à crucificação. (Mateus 27)", letra: "P" },
-  { nome: "Potifar", desc: "Oficial do Faraó, que comprou José como escravo no Egito. (Gênesis 39)", letra: "P" },
-  { nome: "Priscila", desc: "Missionária cristã, esposa de Áquila, que trabalhou ao lado de Paulo. (Atos 18)", letra: "P" },
-  { nome: "Quartus", desc: "Cristão de Corinto que enviou saudações aos irmãos em Roma através de Paulo. (Romanos 16)", letra: "Q" },
-  { nome: "Quézia", desc: "Uma das filhas de Jó, nascida após sua provação. (Jó 42)", letra: "Q" },
-  { nome: "Quirino", desc: "Governador da Síria no tempo em que Jesus nasceu. (Lucas 2)", letra: "Q" },
-  { nome: "Raabe", desc: "Prostituta de Jericó que ajudou os espiões israelitas, sendo salva depois. (Josué 2)", letra: "R" },
-  { nome: "Raquel", desc: "A segunda e mais amada esposa de Jacó, mãe de José e Benjamim. (Gênesis 29)", letra: "R" },
-  { nome: "Rebeca", desc: "Esposa de Isaque e mãe de Esaú e Jacó. (Gênesis 24)", letra: "R" },
-  { nome: "Roboão", desc: "Filho de Salomão, cujo governo duro dividiu o reino de Israel. (1 Reis 12)", letra: "R" },
-  { nome: "Rute", desc: "Moabita leal à sua sogra Noemi e se tornou ancestral de Davi. (Rute)", letra: "R" },
-  { nome: "Salomão", desc: "Filho de Davi e Bate-Seba, rei de Israel, conhecido por sua grande sabedoria. (1 Reis)", letra: "S" },
-  { nome: "Samuel", desc: "O último juiz de Israel e um dos grandes profetas. (1 Samuel)", letra: "S" },
-  { nome: "Sansão", desc: "Juiz de Israel com uma força sobre-humana. (Juízes 13-16)", letra: "S" },
-  { nome: "Sara", desc: "Esposa de Abraão e mãe de Isaque. (Gênesis 17)", letra: "S" },
-  { nome: "Satanás", desc: "Anjo caído, o adversário de Deus e da humanidade. (Jó 1)", letra: "S" },
-  { nome: "Saul", desc: "O primeiro rei de Israel. (1 Samuel)", letra: "S" },
-  { nome: "Sem", desc: "Um dos filhos de Noé, ancestral dos povos semitas e de Abraão. (Gênesis 9)", letra: "S" },
-  { nome: "Sete", desc: "O terceiro filho de Adão e Eva, por trás da linhagem piedosa. (Gênesis 4:25)", letra: "S" },
-  { nome: "Silas", desc: "Companheiro do apóstolo Paulo em suas viagens missionárias. (Atos 15)", letra: "S" },
-  { nome: "Simeão", desc: "O homem que viu Jesus no templo e o reconheceu como Salvador. (Lucas 2)", letra: "S" },
-  { nome: "Tabita", desc: "Discípula de Jope que foi ressuscitada por Pedro. (Atos 9)", letra: "T" },
-  { nome: "Tamar", desc: "Nora de Judá, que se disfarçou para garantir seus direitos. (Gênesis 38)", letra: "T" },
-  { nome: "Teófilo", desc: "A pessoa a quem Lucas dedicou seu evangelho e o livro de Atos. (Lucas 1)", letra: "T" },
-  { nome: "Terá", desc: "Pai de Abraão, que partiu de Ur dos Caldeus com sua família. (Gênesis 11)", letra: "T" },
-  { nome: "Timóteo", desc: "Jovem discípulo e companheiro de Paulo. (1 Timóteo)", letra: "T" },
-  { nome: "Tito", desc: "Gentio convertido e companheiro de Paulo. (Tito)", letra: "T" },
-  { nome: "Tomé", desc: "Apóstolo conhecido como 'inquérito' por duvidar da ressurreição. (João 20)", letra: "T" },
-  { nome: "Urias", desc: "Soldado hitita e primeiro marido de Bate-Seba. (2 Samuel 11)", letra: "U" },
-  { nome: "Uzias", desc: "Rei de Judá, sucesso militar e punido com lepra pelo orgulho. (2 Crônicas 26)", letra: "U" },
-  { nome: "Vasti", desc: "Primeira esposa do rei Xerxes na Pérsia, recusada por ele. (Ester 1)", letra: "V" },
-  { nome: "Zacarias", desc: "Sacerdote e pai de João Batista. (Lucas 1)", letra: "Z" },
-  { nome: "Zaqueu", desc: "O cobrador de impostos de Jericó que se arrependeu. (Lucas 19)", letra: "Z" },
-  { nome: "Zedequias", desc: "O último rei de Judá, cativo na Babilônia. (2 Reis 24)", letra: "Z" },
-  { nome: "Zeres", desc: "Esposa de Hamã, aconselhou a forca contra Mardoqueu. (Ester 5)", letra: "Z" },
-  { nome: "Zípora", desc: "Esposa de Moisés e filha de Jetro. (Êxodo 2:21)", letra: "Z" }
-];
-
+const curiosidadesList = await FileAttachment("data/characters.json").json();
+const booksIndex = await FileAttachment("data/booksIndex.json").json();
 const alphabets = [...new Set(curiosidadesList.map(c => c.letra))].sort();
+// Recupera parametro de busca da URL
+const urlSearch = new URLSearchParams(window.location.search).get("search");
+const initialLetter = urlSearch ? urlSearch[0].toUpperCase() : "Todos";
 
-const letterInputObj = Inputs.radio(["Todos", ...alphabets], {label: "Filtrar por Letra", value: "Todos"});
+const letterInputObj = Inputs.radio(["Todos", ...alphabets], {label: "Filtrar por Letra", value: initialLetter});
 const selectedLetter = Generators.input(letterInputObj);
 const letterInputView = letterInputObj;
+
+function linkRef(text) {
+  // Regex para capturar (Livro 1:1) ou (Livro 1)
+  return text.replace(/\(([^0-9]+)\s+([0-9:]+)\)/g, (match, bookName, pos) => {
+    const book = booksIndex.find(b => b.nome.toLowerCase() === bookName.trim().toLowerCase());
+    if (book) {
+      const chapter = pos.split(':')[0];
+      return html`<a href="/reader?book=${book.id}&chapter=${chapter}" class="text-sky-500 font-bold hover:underline">(${bookName} ${pos})</a>`;
+    }
+    return match;
+  });
+}
 ```
 
 <div class="card-premium p-6 sm:p-10 mb-12 shadow-2xl backdrop-blur-md">
@@ -208,7 +51,7 @@ const letterInputView = letterInputObj;
             <span class="w-6 h-6 flex items-center justify-center bg-slate-950 border border-slate-700 rounded text-[0.6rem] text-slate-500 font-black">${c.letra}</span> 
             ${c.nome}
         </h3>
-        <p class="text-sm text-slate-400 leading-relaxed font-medium">${c.desc}</p>
+        <p class="text-sm text-slate-400 leading-relaxed font-medium">${linkRef(c.desc)}</p>
       </div>
     `)}
   </div>

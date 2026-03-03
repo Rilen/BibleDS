@@ -44,8 +44,6 @@ export default {
       <div class="links">
         <a href="/" class="nav-link">Dashboard</a>
         <a href="/home" class="nav-link">Estudos</a>
-        <a href="/curiosidades" class="nav-link">Curiosidades</a>
-        <a href="/mapa" class="nav-link">Mapa Histórico</a>
         <a href="/lab" class="nav-link">Laboratório IA</a>
       </div>
       <div class="hidden sm:block text-[0.6rem] font-black text-slate-500 uppercase tracking-widest opacity-50">

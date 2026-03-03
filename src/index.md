@@ -5,7 +5,7 @@ toc: false
 sidebar: false
 ---
 
-
+<div class="w-full">
   <header class="mb-12 animate-reveal">
     <h1 class="text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
       <span class="w-3 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
@@ -25,7 +25,6 @@ sidebar: false
       <p class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">Palavras Processadas</p>
     </div>
   </div>
-
   <div class="card-kpi border-l-4 border-l-sky-500">
     <div class="flex flex-col h-full justify-between">
       <div>
@@ -35,7 +34,6 @@ sidebar: false
       <p class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">Pipeline Validado</p>
     </div>
   </div>
-
   <div class="card-kpi border-l-4 border-l-sky-500">
     <div class="flex flex-col h-full justify-between">
       <div>
@@ -45,7 +43,6 @@ sidebar: false
       <p class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">O(1) Search Latency</p>
     </div>
   </div>
-
   <div class="card-kpi border-l-4 border-l-sky-500">
     <div class="flex flex-col h-full justify-between">
       <div>
@@ -62,11 +59,9 @@ sidebar: false
     <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
     Densidade Lexical por Livro (Evolução Temporal)
   </h2>
-  
   <div class="mb-8 p-4 bg-slate-900/50 rounded-lg border border-slate-800 radio-container">
     ${testamentoInput}
   </div>
-
   <div class="w-full h-[400px]">
     ${resize((width) => Plot.plot({
       width,
@@ -74,29 +69,12 @@ sidebar: false
       marginLeft: 50,
       marginTop: 20,
       grid: true,
-      style: {
-        background: "transparent",
-        color: "white"
-      },
+      style: { background: "transparent", color: "white" },
       x: { label: "Progressão Canônica (Livros) →", tickFormat: "" },
       y: { label: "Densidade Lexical (%)", domain: [0, 100] },
       marks: [
-        Plot.areaY(filteredBooks, {
-          x: (d, i) => i, 
-          y: "density",
-          fill: "url(#gradient)",
-          curve: "natural", 
-          opacity: 0.3
-        }),
-        Plot.lineY(filteredBooks, {
-          x: (d, i) => i,
-          y: "density",
-          stroke: "#38bdf8",
-          strokeWidth: 3,
-          curve: "natural",
-          tip: { fill: "#0f172a", stroke: "#38bdf8", strokeWidth: 1 },
-          title: (d) => `${d.nome} (${d.testamento})\nDensidade: ${d.density}%\nPalavras: ${d.rawWords}`
-        })
+        Plot.areaY(filteredBooks, { x: (d, i) => i, y: "density", fill: "url(#gradient)", curve: "natural", opacity: 0.3 }),
+        Plot.lineY(filteredBooks, { x: (d, i) => i, y: "density", stroke: "#38bdf8", strokeWidth: 3, curve: "natural", tip: { fill: "#0f172a", stroke: "#38bdf8", strokeWidth: 1 }, title: (d) => `${d.nome} (${d.testamento})\nDensidade: ${d.density}%\nPalavras: ${d.rawWords}` })
       ]
     }))}
   </div>
@@ -119,10 +97,6 @@ const filteredBooks = testamentoSelecionado === "Todos"
   : processed.books.filter(b => b.testamento === (testamentoSelecionado.includes("VT") ? "VT" : "NT"));
 ```
 
-
-
-
-
 <div class="grid grid-cols-1 gap-6 mt-12 animate-reveal">
   <div class="card-premium p-6 sm:p-10">
     <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
@@ -139,20 +113,13 @@ const filteredBooks = testamentoSelecionado === "Todos"
         y: { label: "Palavras Totais" },
         color: { legend: true, domain: ["VT", "NT"], range: ["#bae6fd", "#38bdf8"] },
         marks: [
-          Plot.barY(filteredBooks, {
-            x: "nome",
-            y: "rawWords",
-            fill: "testamento",
-            title: (d) => `${d.nome}\n${d.rawWords.toLocaleString()} Palavras Totais`,
-            tip: { fill: "#0f172a", stroke: "#38bdf8" }
-          }),
+          Plot.barY(filteredBooks, { x: "nome", y: "rawWords", fill: "testamento", title: (d) => `${d.nome}\n${d.rawWords.toLocaleString()} Palavras Totais`, tip: { fill: "#0f172a", stroke: "#38bdf8" } }),
           Plot.ruleY([0])
         ]
       }))}
     </div>
   </div>
 
-  
   <div class="card-premium p-6 sm:p-10">
     <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
       <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
@@ -169,16 +136,7 @@ const filteredBooks = testamentoSelecionado === "Todos"
         y: { label: "Palavras por Versículo" },
         color: { legend: true, domain: ["VT", "NT"], range: ["#bae6fd", "#38bdf8"] },
         marks: [
-          Plot.dot(filteredBooks, {
-            x: "nome",
-            y: "wordsPerVerse",
-            r: 6,
-            fill: "testamento",
-            fillOpacity: 0.8,
-            stroke: "none",
-            tip: { fill: "#0f172a", stroke: "#38bdf8" },
-            title: (d) => `${d.nome} (${d.testamento})\n${d.wordsPerVerse} plv/versículo\nTotal de Versículos: ${d.totalVerses}`
-          }),
+          Plot.dot(filteredBooks, { x: "nome", y: "wordsPerVerse", r: 6, fill: "testamento", fillOpacity: 0.8, stroke: "none", tip: { fill: "#0f172a", stroke: "#38bdf8" }, title: (d) => `${d.nome} (${d.testamento})\n${d.wordsPerVerse} plv/versículo\nTotal de Versículos: ${d.totalVerses}` }),
           Plot.ruleY([0])
         ]
       }))}

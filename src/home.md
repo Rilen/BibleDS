@@ -5,14 +5,41 @@ toc: false
 sidebar: false
 ---
 
-<div class="px-4 py-8">
+<div class="w-full">
   <header class="mb-12 animate-reveal">
     <h1 class="text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
-      <span class="w-2 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
+      <span class="w-3 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
       Estudos <span class="text-sky-500 italic">Canônico</span>
     </h1>
     <p class="text-slate-400 font-medium tracking-widest uppercase text-xs opacity-60">Matriz de Navegação Bíblica • Filtros Inteligentes</p>
   </header>
+
+<!-- NAVIGATION MODULES -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 animate-reveal">
+  <a href="/curiosidades" class="no-underline group">
+    <div class="card-kpi border-l-4 border-l-sky-500 group-hover:border-l-sky-400 transition-all h-full">
+      <div class="flex flex-col h-full justify-between">
+        <div>
+          <h2 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 italic">Módulo Extra</h2>
+          <div class="text-3xl font-black text-white italic group-hover:text-sky-400 transition-colors">Curiosidades</div>
+        </div>
+        <div class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">Glossário A-Z • Personagens</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="/mapa" class="no-underline group">
+    <div class="card-kpi border-l-4 border-l-sky-500 group-hover:border-l-sky-400 transition-all h-full">
+      <div class="flex flex-col h-full justify-between">
+        <div>
+          <h2 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 italic">Interativo</h2>
+          <div class="text-3xl font-black text-white italic group-hover:text-sky-400 transition-colors">Mapa Histórico</div>
+        </div>
+        <div class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">Cartografia • Rotas do Êxodo</div>
+      </div>
+    </div>
+  </a>
+</div>
 
 ```js
 const books = FileAttachment("data/booksIndex.json").json();
@@ -60,11 +87,14 @@ const semanticThemes = {
 </div>
 
 ```js
+const booksSentiment = await FileAttachment("data/books_sentiment.json").json();
+
 const booksGrid = html`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
   ${filteredBooks.map(b => {
     // Check if it was a semantic match
     const query = searchInputValue.toLowerCase();
     const isSemanticMatch = query && semanticThemes[query] && semanticThemes[query].includes(b.id);
+    const sentiment = booksSentiment[b.id] || 50;
     
     return html`
       <a href=${`/reader?book=${b.id}`} class="group block no-underline animate-slide-up">
@@ -78,7 +108,16 @@ const booksGrid = html`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-
             </div>
             <h3 class="text-xl font-bold text-white mb-2 leading-tight group-hover:text-sky-300 transition-colors">${b.nome}</h3>
           </div>
-          <p class="text-[0.6rem] text-slate-600 font-bold uppercase tracking-tighter mt-4">Analisar Semântica &rarr;</p>
+          
+          <div class="mt-4 pt-4 border-t border-slate-800/50">
+             <div class="flex justify-between items-center mb-1">
+                <span class="text-[0.5rem] text-slate-500 font-black uppercase tracking-tighter italic">Vibe Semântica</span>
+                <span class="text-[0.6rem] font-black ${sentiment > 50 ? 'text-sky-400' : 'text-amber-500'}">${sentiment}%</span>
+             </div>
+             <div class="w-full h-1 bg-slate-900 rounded-full overflow-hidden">
+                <div class="h-full ${sentiment > 50 ? 'bg-sky-500' : 'bg-amber-500'}" style="width: ${sentiment}%"></div>
+             </div>
+          </div>
         </div>
       </a>
     `;

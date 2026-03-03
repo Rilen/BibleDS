@@ -100,7 +100,14 @@ const sampleGeoData = [
 
     // Paulo
     { character: "Paulo (Atos)", type: "Feature", geometry: { type: "Point", coordinates: [36.29, 33.51] }, properties: { name: "Damasco", category: "Conversão", desc: "Caminho onde Paulo se encontrou com o Cristo Ressurreto." } },
+    { character: "Paulo (Atos)", type: "Feature", geometry: { type: "Point", coordinates: [27.34, 37.94] }, properties: { name: "Éfeso", category: "Ministério", desc: "Permaneceu por 3 anos fortalecendo a igreja." } },
+    { character: "Paulo (Atos)", type: "Feature", geometry: { type: "Point", coordinates: [23.72, 37.98] }, properties: { name: "Atenas (Areópago)", category: "Discurso", desc: "Pregou aos filósofos gregos sobre o Deus Desconhecido." } },
     { character: "Paulo (Atos)", type: "Feature", geometry: { type: "Point", coordinates: [12.49, 41.90] }, properties: { name: "Roma", category: "Missão Final", desc: "Conclusão das viagens missionárias pelo Império Romano." } },
+    { character: "Paulo (Atos)", type: "Feature", geometry: { type: "LineString", coordinates: [ [35.23, 31.77], [35.46, 33.88], [34.78, 32.08], [27.34, 37.94], [23.72, 37.98], [12.49, 41.90] ] }, properties: { name: "Expansão Gentílica", category: "Rota", desc: "O caminho do Evangelho até o coração do Império." } },
+
+    // Rainha de Sabá
+    { character: "Rainha de Sabá (Reis)", type: "Feature", geometry: { type: "Point", coordinates: [44.2, 15.4] }, properties: { name: "Reino de Sabá (Iêmen)", category: "Origem", desc: "O reino distante cujos governantes buscaram a sabedoria de Salomão." } },
+    { character: "Rainha de Sabá (Reis)", type: "Feature", geometry: { type: "LineString", coordinates: [ [44.2, 15.4], [40.0, 21.0], [36.0, 26.0], [35.23, 31.77] ] }, properties: { name: "Caravana Real", category: "Rota", desc: "Cruzando desertos com especiarias e ouro para testar Salomão." } },
 
     // Pedro
     { character: "Pedro (Evangelhos/Atos)", type: "Feature", geometry: { type: "Point", coordinates: [35.5684, 32.7963] }, properties: { name: "Mar da Galileia", category: "Chamado", desc: "O local onde foi pescado para ser pescador de homens." } },
@@ -108,7 +115,7 @@ const sampleGeoData = [
 ];
 
 const characterInputObj = Inputs.select([
-  "Todas as Jornadas", "Adão e Eva (Gênesis)", "Noé (Gênesis)", "Abraão (Gênesis)", "Jacó (Gênesis)", "José (Gênesis)", "Moisés (Êxodo)", "Rute (Rute)", "Davi (Samuel)", "Salomão (Reis)", "Rainha Ester (Ester)", "Jonas (Jonas)", "Maria (Evangelhos)", "Jesus (Evangelhos)", "Pedro (Evangelhos/Atos)", "Paulo (Atos)"
+  "Todas as Jornadas", "Adão e Eva (Gênesis)", "Noé (Gênesis)", "Abraão (Gênesis)", "Jacó (Gênesis)", "José (Gênesis)", "Moisés (Êxodo)", "Rute (Rute)", "Davi (Samuel)", "Salomão (Reis)", "Rainha de Sabá (Reis)", "Rainha Ester (Ester)", "Jonas (Jonas)", "Maria (Evangelhos)", "Jesus (Evangelhos)", "Pedro (Evangelhos/Atos)", "Paulo (Atos)"
 ], {label: ""});
 const selectedCharacter = Generators.input(characterInputObj);
 const characterInputView = characterInputObj;
@@ -121,6 +128,7 @@ const filteredFeatures = selectedCharacter === "Todas as Jornadas"
 
 const featureCollection = { type: "FeatureCollection", features: filteredFeatures };
 
+const booksSentiment = await FileAttachment("data/books_sentiment.json").json();
 const mapContainer = document.getElementById("biblical-map");
 
 if (mapContainer) {
@@ -152,17 +160,23 @@ if (mapContainer) {
       }
     },
     onEachFeature: function (feature, layer) {
-      const popupContent = "<div style=\"font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; margin: -14px; padding: 15px; border-radius: 8px; border: 1px solid #1e293b;\">" +
-          "<h3 style=\"margin: 0 0 5px 0; font-weight: 900; color: #38bdf8; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em;\">" +
-            feature.properties.name +
-          "</h3>" +
-          "<span style=\"display: inline-block; padding: 2px 6px; background: #0c4a6e; border-radius: 4px; font-size: 0.6rem; font-weight: bold; color: #bae6fd; margin-bottom: 8px;\">" +
-            feature.properties.category +
-          "</span>" +
-          "<p style=\"margin: 0; font-size: 0.8rem; color: #94a3b8; line-height: 1.5;\">" +
-            feature.properties.desc +
-          "</p>" +
-        "</div>";
+      const bookKey = feature.character?.toLowerCase().split('(')[1]?.split(')')[0]?.replace(/\s+/g, '-');
+      const sentiment = booksSentiment[bookKey] || 50;
+
+      const popupContent = `<div style="font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; margin: -14px; padding: 15px; border-radius: 8px; border: 1px solid #1e293b;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
+            <h3 style="margin: 0; font-weight: 900; color: #38bdf8; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em;">
+              ${feature.properties.name}
+            </h3>
+            <span style="font-size: 0.6rem; font-weight: 900; color: ${sentiment > 50 ? '#10b981' : '#f59e0b'};">${sentiment}%</span>
+          </div>
+          <span style="display: inline-block; padding: 2px 6px; background: #0c4a6e; border-radius: 4px; font-size: 0.6rem; font-weight: bold; color: #bae6fd; margin-bottom: 8px;">
+            ${feature.properties.category}
+          </span>
+          <p style="margin: 0; font-size: 0.8rem; color: #94a3b8; line-height: 1.5;">
+            ${feature.properties.desc}
+          </p>
+        </div>`;
       layer.bindPopup(popupContent, { className: 'dark-popup', closeButton: false });
     }
   }).addTo(mapContainer.mapInstance);
@@ -177,6 +191,8 @@ if (mapContainer) {
       mapContainer.mapInstance.flyTo([39.7, 44.3], 7, { duration: 1.5 });
   } else if (selectedCharacter === "Rainha Ester (Ester)") {
       mapContainer.mapInstance.flyTo([32.1, 48.2], 7, { duration: 1.5 });
+  } else if (selectedCharacter === "Rainha de Sabá (Reis)") {
+      mapContainer.mapInstance.flyTo([22.0, 39.0], 5, { duration: 1.5 });
   } else if (selectedCharacter === "Abraão (Gênesis)") {
       mapContainer.mapInstance.flyTo([32.5, 40.5], 5, { duration: 1.5 });
   } else if (selectedCharacter === "Jacó (Gênesis)") {

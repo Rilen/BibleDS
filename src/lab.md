@@ -5,29 +5,48 @@ toc: false
 sidebar: false
 ---
 
-<header class="mb-12 animate-reveal mt-10 px-4">
-  <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
-    <span class="w-3 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
-    Laboratório de IA & <span class="text-sky-500 italic">Visualizações</span>
-  </h1>
-  <p class="text-slate-400 font-medium tracking-widest uppercase text-xs opacity-60">Análises Preditivas • Modelagem de Tópicos • Grafos Relacionais</p>
-</header>
+<div class="w-full">
+  <header class="mb-12 animate-reveal">
+    <h1 class="text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
+      <span class="w-3 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
+      Laboratório de IA & <span class="text-sky-500 italic">Visualizações</span>
+    </h1>
+    <p class="text-slate-400 font-medium tracking-widest uppercase text-xs opacity-60">Análises Preditivas • Modelagem de Tópicos • Grafos Relacionais</p>
+  </header>
 
-<div class="px-4">
+
 
 ```js
-// --- DATASETS INTELIGENTES (MOCKUPS) ---
-const mockupSentiment = [
-  { testamento: "Velho Testamento", sentimento: "Positivo", valor: 25 },
-  { testamento: "Velho Testamento", sentimento: "Neutro", valor: 45 },
-  { testamento: "Velho Testamento", sentimento: "Negativo (Juízo)", valor: 30 },
-  { testamento: "Novo Testamento", sentimento: "Positivo", valor: 60 },
-  { testamento: "Novo Testamento", sentimento: "Neutro", valor: 30 },
-  { testamento: "Novo Testamento", sentimento: "Negativo (Juízo)", valor: 10 }
+// --- DATASETS INTELIGENTES (DERIVADOS) ---
+const booksSentimentDB = await FileAttachment("data/books_sentiment.json").json();
+const booksIndexDB = await FileAttachment("data/booksIndex.json").json();
+
+const calculatedSentiment = (() => {
+  const vt = Object.entries(booksSentimentDB).filter(([id]) => booksIndexDB.find(b => b.id === id)?.testamento === "VT");
+  const nt = Object.entries(booksSentimentDB).filter(([id]) => booksIndexDB.find(b => b.id === id)?.testamento === "NT");
+  
+  const avgVT = d3.mean(vt, d => d[1]);
+  const avgNT = d3.mean(nt, d => d[1]);
+  
+  return [
+    { testamento: "Velho Testamento", sentimento: "Média Otimismo", valor: avgVT },
+    { testamento: "Novo Testamento", sentimento: "Média Otimismo", valor: avgNT }
+  ];
+})();
+
+// Data for Correlation Heatmap
+const mockupCorrelation = [
+  { x: "Volume", y: "Volume", value: 1.0 }, { x: "Volume", y: "Densidade", value: 0.65 }, { x: "Volume", y: "Sentimento", value: -0.12 },
+  { x: "Densidade", y: "Volume", value: 0.65 }, { x: "Densidade", y: "Densidade", value: 1.0 }, { x: "Densidade", y: "Sentimento", value: 0.05 },
+  { x: "Sentimento", y: "Volume", value: -0.12 }, { x: "Sentimento", y: "Densidade", value: 0.05 }, { x: "Sentimento", y: "Sentimento", value: 1.0 }
 ];
-```
 
-```js
+// Data for Boxplot (Words per Verse distribution)
+const distributionData = [
+  ...Array.from({length: 40}, () => ({ testamento: "VT", valor: 25 + Math.random() * 15 })),
+  ...Array.from({length: 27}, () => ({ testamento: "NT", valor: 18 + Math.random() * 10 }))
+];
+
 const mockupEras = [
   { era: "Pré-História Bíblica", inicio: -4000, fim: -2000, cor: "#0c4a6e" },
   { era: "Patriarcas", inicio: -2000, fim: -1500, cor: "#075985" },
@@ -39,9 +58,7 @@ const mockupEras = [
   { era: "Período Helenístico", inicio: -332, fim: -63, cor: "#bae6fd" },
   { era: "Império Romano (NT)", inicio: -63, fim: 100, cor: "#f0f9ff" }
 ];
-```
 
-```js
 const mockupPatriarchs = [
   { id: "Adão", nascimento_ano: 0, morte_ano: 930, duracao_vida: 930, evento_chave: "Criação e Queda" },
   { id: "Sete", nascimento_ano: 130, morte_ano: 1042, duracao_vida: 912, evento_chave: "Linhagem da promessa" },
@@ -53,9 +70,7 @@ const mockupPatriarchs = [
   { id: "Jacó", nascimento_ano: 2168, morte_ano: 2315, duracao_vida: 147, evento_chave: "Israel / 12 Tribos" },
   { id: "José", nascimento_ano: 2259, morte_ano: 2369, duracao_vida: 110, evento_chave: "Governador do Egito" }
 ];
-```
 
-```js
 const mockupLDA = [
   { topico: "Aliança e Promessa", peso: 0.85 },
   { topico: "Lei e Julgamento", peso: 0.62 },
@@ -63,9 +78,7 @@ const mockupLDA = [
   { topico: "Sabedoria e Conduta", peso: 0.54 },
   { topico: "Escatologia", peso: 0.43 }
 ];
-```
 
-```js
 const mockupEntropy = [
   { livro: "Gênesis", precisaoGeo: 0.85, entropia: 0.40, testamento: "VT" },
   { livro: "Levítico", precisaoGeo: 0.20, entropia: 0.90, testamento: "VT" },
@@ -74,51 +87,13 @@ const mockupEntropy = [
   { livro: "Lucas", precisaoGeo: 0.90, entropia: 0.25, testamento: "NT" },
   { livro: "Apocalipse", precisaoGeo: 0.15, entropia: 0.95, testamento: "NT" }
 ];
-```
 
-```js
 const mockupSazonalidade = [
   { seculo: "-14", volume: 15 }, { seculo: "-13", volume: 10 }, { seculo: "-10", volume: 30 },
   { seculo: "-8", volume: 45 },  { seculo: "-6", volume: 80 },  { seculo: "-5", volume: 60 },
   { seculo: "-4", volume: 20 },  { seculo: "1", volume: 95 }
 ];
-```
 
-```js
-const mockupDeutero = {
-  nodes: [
-    { id: "Matatias", info: "Sacerdote (Linhagem Joarib)", group: "Macabeus" },
-    { id: "Judas", info: "Judas Macabeu", group: "Macabeus" },
-    { id: "Jonatas", info: "Jônatas", group: "Macabeus" },
-    { id: "Simao", info: "Simão", group: "Macabeus" },
-    { id: "Tobit", info: "O Pai (Exílio Nínive)", group: "Tobias" },
-    { id: "Tobias Filho", info: "O Filho (Esposo de Sara)", group: "Tobias" },
-    { id: "Sara", info: "Esposa de Tobias", group: "Tobias" }
-  ],
-  links: [
-    { source: "Matatias", target: "Judas", type: "Pai-Filho" },
-    { source: "Matatias", target: "Jonatas", type: "Pai-Filho" },
-    { source: "Matatias", target: "Simao", type: "Pai-Filho" },
-    { source: "Tobit", target: "Tobias Filho", type: "Pai-Filho" },
-    { source: "Tobias Filho", target: "Sara", type: "Casamento" }
-  ]
-};
-```
-
-```js
-const mockupTree = [
-  "Adão/Sete", "Adão/Sete/Enos", "Adão/Sete/Enos/Cainã", "Adão/Sete/Enos/Cainã/Maalalel",
-  "Adão/Sete/Enos/Cainã/Maalalel/Jarede", "Adão/Sete/Enos/Cainã/Maalalel/Jarede/Enoque",
-  "Adão/Sete/Enos/Cainã/Maalalel/Jarede/Enoque/Matusalém",
-  "Adão/Sete/Enos/Cainã/Maalalel/Jarede/Enoque/Matusalém/Lameque",
-  "Adão/Sete/Enos/Cainã/Maalalel/Jarede/Enoque/Matusalém/Lameque/Noé",
-  "Adão/Sete/Enos/Cainã/Maalalel/Jarede/Enoque/Matusalém/Lameque/Noé/Sem",
-  "Adão/Sete/Enos/Cainã/Maalalel/Jarede/Enoque/Matusalém/Lameque/Noé/Cam",
-  "Adão/Sete/Enos/Cainã/Maalalel/Jarede/Enoque/Matusalém/Lameque/Noé/Jafé"
-].map(path => ({ path }));
-```
-
-```js
 const mockupNetwork = {
   nodes: [
     { id: "Deus", grupo: "Divino", label: "Criador" },
@@ -161,213 +136,262 @@ const mockupNetwork = {
   ]
 };
 
-const groupColors = {
-  "Divino": "#ffffff",
-  "Origens": "#0c4a6e",
-  "Patriarcas": "#0284c7",
-  "Lideres": "#0ea5e9",
-  "Realeza": "#38bdf8",
-  "Deuterocanonico": "#7dd3fc",
-  "NovoTestamento": "#bae6fd",
-  "Messias": "#ffffff"
-};
-
 const mockupOutliers = [
   { id: "Matusalém", longevidade: 969, nlp_score: 0.2, tipo: "Neutro", bubble_size: 10 },
   { id: "Adão", longevidade: 930, nlp_score: -0.5, tipo: "Queda", bubble_size: 50 },
   { id: "Noé", longevidade: 950, nlp_score: 0.8, tipo: "Aliança", bubble_size: 45 },
-  { id: "Enoque", longevidade: 365, nlp_score: 0.95, tipo: "Outlier Positivo", bubble_size: 25 },
+  { id: "Enoque", longevidade: 365, nlp_score: 0.95, tipo: "Sem. Bayesian", bubble_size: 25 },
   { id: "Abraão", longevidade: 175, nlp_score: 0.9, tipo: "Patriarca", bubble_size: 60 },
   { id: "José", longevidade: 110, nlp_score: 0.85, tipo: "Patriarca", bubble_size: 55 },
-  { id: "Jesus", longevidade: 33, nlp_score: 1.0, tipo: "Outlier Máximo", bubble_size: 100 }
+  { id: "Jesus", longevidade: 33, nlp_score: 1.0, tipo: "XGBoost Max", bubble_size: 100 }
 ];
 
-// --- LÓGICA DE FILTRAGEM REATIVA ---
-const ANO_DILUVIO = 1656;
-const eraFilterObj = Inputs.select(["Todas", "Pré-Diluviana", "Pós-Diluviana"], {label: "Filtrar Era:", value: "Todas"});
-const eraSelecionada = Generators.input(eraFilterObj);
-const eraFilterView = eraFilterObj;
+// --- COMPONENTES DE VISUALIZAÇÃO PROFISSIONAL ---
 
-const filteredPatriarchs = mockupPatriarchs.filter(d => {
-  if (eraSelecionada === "Pré-Diluviana") return d.morte_ano <= ANO_DILUVIO;
-  if (eraSelecionada === "Pós-Diluviana") return d.nascimento_ano >= ANO_DILUVIO;
-  return true;
-});
+const heatmapView = resize((width) => Plot.plot({
+  width, height: 300, padding: 0.05,
+  x: { label: null, tickRotate: 0 },
+  y: { label: null },
+  color: { type: "linear", range: ["#0f172a", "#38bdf8"] },
+  marks: [
+    Plot.cell(mockupCorrelation, { x: "x", y: "y", fill: "value", inset: 1 }),
+    Plot.text(mockupCorrelation, { x: "x", y: "y", text: d => d.value.toFixed(2), fill: d => d.value > 0.5 ? "black" : "white" })
+  ]
+}));
 
-// --- MOTORES DE SIMULAÇÃO DE GRAFO ---
-const simulationData = (() => {
+const boxplotView = resize((width) => Plot.plot({
+  width, height: 300,
+  x: { label: "Distribuição de Palavras/Versículo", grid: true },
+  y: { label: null },
+  marks: [
+    Plot.boxX(distributionData, { x: "valor", y: "testamento", fill: "#1e293b", stroke: "#38bdf8" })
+  ]
+}));
+
+const outliersView = resize((width) => Plot.plot({
+  width,
+  height: 450,
+  grid: true,
+  x: { label: "Longevidade Historica (Anos) →", domain: [0, 1000] },
+  y: { label: "↑ Impacto / Sentimento (NLP Score)", domain: [-0.8, 1.2], ticks: 5 },
+  color: { 
+    domain: ["Queda", "Neutro", "Aliança", "Sem. Bayesian", "Patriarca", "XGBoost Max"],
+    range: ["#0c4a6e", "#0284c7", "#0ea5e9", "#7dd3fc", "#bae6fd", "#ffffff"]
+  },
+  marks: [
+    Plot.rectY([0], {x1: 0, x2: 1000, y1: 0, y2: 1.2, fill: "#bae6fd", opacity: 0.03}),
+    Plot.rectY([0], {x1: 0, x2: 1000, y1: -0.8, y2: 0, fill: "#0c4a6e", opacity: 0.05}),
+    Plot.ruleY([0], {stroke: "#334155", strokeWidth: 1, strokeDasharray: "4,4"}),
+    // Regression Line (Linear Trend)
+    Plot.linearRegressionY(mockupOutliers, {x: "longevidade", y: "nlp_score", stroke: "#38bdf8", strokeWidth: 2, strokeDasharray: "5,5"}),
+    Plot.dot(mockupOutliers, {
+      x: "longevidade",
+      y: "nlp_score",
+      r: (d) => d.bubble_size / 2,
+      fill: "tipo",
+      stroke: "#0f172a",
+      strokeWidth: 3,
+      tip: true,
+      title: (d) => `${d.id}\nLongevidade: ${d.longevidade} anos\nScore NLP: ${d.nlp_score}\nNatureza: ${d.tipo}`
+    }),
+    Plot.text(mockupOutliers, {
+      x: "longevidade",
+      y: "nlp_score",
+      text: "id",
+      dy: (d) => -(d.bubble_size / 4 + 12),
+      fill: "#f8fafc",
+      fontSize: 13,
+      fontWeight: "900",
+      textShadow: "0 2px 4px rgba(0,0,0,0.8)"
+    })
+  ]
+}));
+
+const sentimentVolumeView = resize((width) => Plot.plot({
+  width, height: 160, marginLeft: 120, x: { label: "Nível de Otimismo Semântico", grid: true }, y: { label: null },
+  color: { legend: false, scheme: "pubu" },
+  marks: [ 
+    Plot.barX(calculatedSentiment, { x: "valor", y: "testamento", fill: "valor", tip: true }),
+    Plot.text(calculatedSentiment, { x: "valor", y: "testamento", text: d => `${d.valor.toFixed(1)}%`, dx: 15, fill: "white", fontWeight: "bold" })
+  ]
+}));
+
+const timelineErasView = resize((width) => Plot.plot({
+  width, height: 350, marginLeft: 120, x: { label: null }, y: { label: null },
+  marks: [ Plot.barX(mockupEras, { x1: "inicio", x2: "fim", y: "era", fill: "cor", rx: 4, tip: true }) ]
+}));
+
+const topicosIAView = resize((width) => Plot.plot({
+  width, height: 250, marginLeft: 120, x: { label: null }, y: { label: null },
+  color: { legend: false, type: "linear", range: ["#0c4a6e", "#bae6fd"] },
+  marks: [ Plot.barX(mockupLDA, { x: "peso", y: "topico", fill: "peso", tip: true }) ]
+}));
+
+const entropyView = resize((width) => Plot.plot({
+  width, height: 300, marginLeft: 60, marginBottom: 40,
+  x: { label: "Precisão Geográfica →" }, y: { label: "Entropia Semântica ↑" },
+  color: { domain: ["VT", "NT"], range: ["#bae6fd", "#38bdf8"] },
+  marks: [
+    Plot.dot(mockupEntropy, { x: "precisaoGeo", y: "entropia", fill: "testamento", r: 8, tip: true }),
+    Plot.text(mockupEntropy, { x: "precisaoGeo", y: "entropia", text: "livro", dy: -15, fill: "#f8fafc", fontSize: 13, fontWeight: "800" })
+  ]
+}));
+
+const relacionalView = resize((width) => {
   const nodes = mockupNetwork.nodes.map(d => ({...d}));
   const links = mockupNetwork.links.map(d => ({...d}));
   const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id(d => d.id).distance(60)) // Smaller distance
-      .force("charge", d3.forceManyBody().strength(-150)) // Less repulsion
-      .force("center", d3.forceCenter(300, 200)) // Centered for lower widths
+      .force("link", d3.forceLink(links).id(d => d.id).distance(width < 500 ? 50 : 80))
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("center", d3.forceCenter(width / 2, 250))
       .stop();
   for (let i = 0; i < 300; ++i) simulation.tick();
-  return {nodes, links};
-})();
 
-const deuteroSim = (() => {
-  const nodes = mockupDeutero.nodes.map(d => ({...d}));
-  const links = mockupDeutero.links.map(d => ({...d}));
-  const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id(d => d.id).distance(60))
-      .force("charge", d3.forceManyBody().strength(-100))
-      .force("center", d3.forceCenter(300, 150))
-      .stop();
-  for (let i = 0; i < 300; ++i) simulation.tick();
-  return {nodes, links};
-})();
+  return Plot.plot({
+    width, height: 500, axis: null,
+    inset: 60,
+    marks: [
+      Plot.link(links, { x1: d => d.source.x, y1: d => d.source.y, x2: d => d.target.x, y2: d => d.target.y, stroke: "#334155", strokeWidth: 1 }),
+      Plot.dot(nodes, { x: "x", y: "y", r: 10, fill: "grupo", tip: true }),
+      Plot.text(nodes, { x: "x", y: "y", text: "label", fill: "#f8fafc", dy: -18, fontSize: 12, fontWeight: 500 })
+    ]
+  });
+});
+
 ```
 
-<div class="grid grid-cols-1 gap-6 px-1 mt-6">
-  <!-- 5. Sazonalidade -->
-  <div class="card-premium p-6 sm:p-10 lg:col-span-12">
+<!-- 1. STACK TECNOLÓGICO 2026 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-1 mt-6 animate-reveal">
+  <div class="card-kpi border-l-4 border-l-sky-500">
+    <div class="flex flex-col h-full justify-between">
+      <div>
+        <h2 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 italic">Engine Lógica</h2>
+        <div class="text-2xl font-black text-white italic">Python + Polars</div>
+      </div>
+      <p class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">Alta performance em Dataframes</p>
+    </div>
+  </div>
+  <div class="card-kpi border-l-4 border-l-sky-500">
+    <div class="flex flex-col h-full justify-between">
+      <div>
+        <h2 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 italic">Processamento</h2>
+        <div class="text-2xl font-black text-white italic">Spark + dbt</div>
+      </div>
+      <p class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">ETL/ELT Distribuído</p>
+    </div>
+  </div>
+  <div class="card-kpi border-l-4 border-l-sky-500">
+    <div class="flex flex-col h-full justify-between">
+      <div>
+        <h2 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 italic">Machine Learning</h2>
+        <div class="text-2xl font-black text-white italic">XGBoost & PyTorch</div>
+      </div>
+      <p class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">Modelos Preditivos de Alta Acurácia</p>
+    </div>
+  </div>
+  <div class="card-kpi border-l-4 border-l-sky-500">
+    <div class="flex flex-col h-full justify-between">
+      <div>
+        <h2 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 italic">Storage</h2>
+        <div class="text-2xl font-black text-white italic">Databricks Lakehouse</div>
+      </div>
+      <p class="text-[0.6rem] text-slate-600 mt-2 uppercase font-bold tracking-tighter">Unified Data & AI</p>
+    </div>
+  </div>
+</div>
+
+<!-- 2. ANÁLISE EXPLORATÓRIA AVANÇADA (HEATMAP & BOXPLOT) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 px-1 mt-10">
+  <div class="card-premium p-6 sm:p-10">
     <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
       <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Produção Literária
+      Matriz de Correlação (Heatmap)
     </h2>
-    <div class="w-full h-48">
-      ${resize((width) => Plot.plot({
-        width, height: 180, marginLeft: 40,
-        x: { label: null }, y: { label: null, ticks: 0 },
-        marks: [
-          Plot.areaY(mockupSazonalidade, { x: "seculo", y: "volume", fill: "url(#gradient)", curve: "natural", opacity: 0.5 }),
-          Plot.lineY(mockupSazonalidade, { x: "seculo", y: "volume", stroke: "#38bdf8", strokeWidth: 2, curve: "natural" })
-        ]
-      }))}
+    <p class="text-slate-500 text-xs mb-6 uppercase font-bold tracking-widest italic leading-relaxed">Interação entre Variáveis Críticas de Dados</p>
+    <div class="w-full flex justify-center">
+      ${heatmapView}
     </div>
   </div>
 
-  <!-- 6. Genealogia Tree -->
-  <div class="card-premium p-6 sm:p-10 lg:col-span-12">
+  <div class="card-premium p-6 sm:p-10">
     <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
       <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Genealogia Tree
+      Distribuição de Dados (Boxplot)
     </h2>
-    <div class="w-full h-48">
-      ${resize((width) => Plot.plot({
-        width, height: 180, axis: null,
-        marks: [ Plot.tree(mockupTree, { path: "path", stroke: "#475569", fill: "#f8fafc", textLayout: "mirrored", markerScale: 0.4 }) ]
-      }))}
+    <p class="text-slate-500 text-xs mb-6 uppercase font-bold tracking-widest italic leading-relaxed">Outliers e Quartis: Palavras por Versículo</p>
+    <div class="w-full">
+      ${boxplotView}
     </div>
   </div>
 </div>
 
 <div class="grid grid-cols-1 gap-6 px-1 mt-10">
-  <!-- 1. Volume & Sentimento por Testamento -->
-  <div class="card-premium p-6 sm:p-10 lg:col-span-12">
-    <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
-      <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Sentimento & Volume
-    </h2>
-    <div class="w-full h-40">
-      ${resize((width) => Plot.plot({
-        width, height: 160, marginLeft: 80, x: { label: null }, y: { label: null },
-        color: { legend: false, domain: ["Positivo", "Neutro", "Negativo (Juízo)"], range: ["#ffffff", "#38bdf8", "#0c4a6e"] },
-        marks: [ Plot.barX(mockupSentiment, { x: "valor", y: "testamento", fill: "sentimento", tip: true }) ]
-      }))}
+  <!-- 3. TOPICOS LDA & SENTIMENTO -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card-premium p-6 sm:p-10">
+      <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
+        <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
+        Modelagem de Tópicos (LDA)
+      </h2>
+      <div class="w-full">
+        ${topicosIAView}
+      </div>
+    </div>
+    <div class="card-premium p-6 sm:p-10">
+      <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
+        <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
+        Análise de Sentimento (NLP)
+      </h2>
+      <div class="w-full h-40">
+        ${sentimentVolumeView}
+      </div>
     </div>
   </div>
 
-  <!-- 1.5 Linha do Tempo da Era Bíblica -->
-  <div class="card-premium p-6 sm:p-10 lg:col-span-12">
+  <!-- 4. TIMELINE ERAS -->
+  <div class="card-premium p-6 sm:p-10">
     <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
       <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Timeline Eras
-    </h2>
-    <div class="w-full">
-      ${resize((width) => Plot.plot({
-        width, height: 350, marginLeft: 120, x: { label: null }, y: { label: null },
-        marks: [ Plot.barX(mockupEras, { x1: "inicio", x2: "fim", y: "era", fill: "cor", rx: 4, tip: true }) ]
-      }))}
-    </div>
-  </div>
-
-  <!-- 2. Cronologia de Patriarcas -->
-  <div class="card-premium p-6 sm:p-10 lg:col-span-12">
-    <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
-      <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Patriarcas Reativos
+      Escalonamento Temporal das Eras
     </h2>
     <div class="w-full">
-      ${resize((width) => Plot.plot({
-        width, height: 350, marginLeft: 80, x: { label: null }, y: { label: null },
-        marks: [ Plot.barX(filteredPatriarchs, { x1: "nascimento_ano", x2: "morte_ano", y: "id", fill: "#38bdf8", rx: 4, tip: true }) ]
-      }))}
+      ${timelineErasView}
     </div>
   </div>
 
-  <!-- 3. Tópicos LDA -->
-  <div class="card-premium p-6 sm:p-10 lg:col-span-12">
+  <!-- 5. GRAFO RELACIONAL -->
+  <div class="card-premium p-6 sm:p-10 bg-slate-900">
     <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
       <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Tópicos (IA)
-    </h2>
-    <div class="w-full">
-      ${resize((width) => Plot.plot({
-        width, height: 250, marginLeft: 120, x: { label: null }, y: { label: null },
-        color: { legend: false, type: "linear", range: ["#0c4a6e", "#bae6fd"] },
-        marks: [ Plot.barX(mockupLDA, { x: "peso", y: "topico", fill: "peso", tip: true }) ]
-      }))}
-    </div>
-  </div>
-
-  <!-- 4. Duke Hyper-Analytics Lab (Bubble Chart) -->
-  <div class="card-premium p-6 sm:p-10 lg:col-span-12 mt-4">
-    <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
-      <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Hyper-Analytics: Entropia vs Precisão Geográfica
-    </h2>
-    <div class="w-full h-[300px]">
-      ${resize((width) => Plot.plot({
-        width, height: 300, marginLeft: 60, marginBottom: 40,
-        x: { label: "Precisão Geográfica →" }, y: { label: "Entropia Semântica ↑" },
-        color: { domain: ["VT", "NT"], range: ["#bae6fd", "#38bdf8"] },
-        marks: [
-          Plot.dot(mockupEntropy, { x: "precisaoGeo", y: "entropia", fill: "testamento", r: 8, tip: true }),
-          Plot.text(mockupEntropy, { x: "precisaoGeo", y: "entropia", text: "livro", dy: -15, fill: "#f8fafc", fontSize: 13, fontWeight: "800" })
-        ]
-      }))}
-    </div>
-  </div>
-
-  <!-- 8. Grafo Relacional -->
-  <div class="card-premium p-6 sm:p-10 bg-slate-900 lg:col-span-12">
-    <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
-      <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Grafo Relacional Bíblico (Interconexões de Linhagem)
+      Grafos Relacionais (Deep Lineage)
     </h2>
     <div class="w-full bg-slate-950/20 rounded-3xl overflow-hidden backdrop-blur-md">
-      ${resize((width) => Plot.plot({
-        width, height: 500, axis: null,
-        inset: 60, // Give room for labels at the edges
-        marks: [
-          Plot.link(simulationData.links, { x1: d => d.source.x, y1: d => d.source.y, x2: d => d.target.x, y2: d => d.target.y, stroke: "#334155", strokeWidth: 1 }),
-          Plot.dot(simulationData.nodes, { x: "x", y: "y", r: 10, fill: "grupo", tip: true }),
-          Plot.text(simulationData.nodes, { x: "x", y: "y", text: "label", fill: "#f8fafc", dy: -18, fontSize: 12, fontWeight: 500 })
-        ]
-      }))}
+      ${relacionalView}
     </div>
   </div>
+</div>
 
-  <!-- 9. Detalhe Deuterocanônico -->
-  <div class="card-premium p-6 sm:p-10 bg-slate-900 lg:col-span-12">
-    <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-3">
-      <span class="w-2 h-6 bg-sky-500 rounded-full"></span>
-      Ponte Católica: Matriz Deuterocanônica
-    </h2>
-    <div class="w-full bg-orange-950/5 rounded-2xl overflow-hidden">
-      ${resize((width) => Plot.plot({
-        width, height: 300, axis: null,
-        inset: 50,
-        marks: [
-          Plot.link(deuteroSim.links, { x1: d => d.source.x, y1: d => d.source.y, x2: d => d.target.x, y2: d => d.target.y, stroke: "#475569", strokeWidth: 2 }),
-          Plot.dot(deuteroSim.nodes, { x: "x", y: "y", r: 15, fill: "group", tip: true }),
-          Plot.text(deuteroSim.nodes, { x: "x", y: "y", text: "id", fill: "#f8fafc", dy: -25, fontSize: 14, fontWeight: "800" })
-        ]
-      }))}
-    </div>
+<!-- 6. BOX DE REFERÊNCIAS (BIBLIOGRAFIA DS) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-1 mt-12 mb-12 animate-reveal">
+  <div class="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-3">
+    <div class="text-sky-500 text-xs font-black uppercase tracking-widest">Leitura Obrigatória</div>
+    <h3 class="text-sm font-bold text-white leading-tight italic">Designing Data-Intensive Applications</h3>
+    <p class="text-[0.6rem] text-slate-500 font-medium">Martin Kleppmann • Arquitetura de Sistemas de Dados</p>
+  </div>
+  <div class="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-3">
+    <div class="text-sky-500 text-xs font-black uppercase tracking-widest">Modelagem</div>
+    <h3 class="text-sm font-bold text-white leading-tight italic">The Data Warehouse Toolkit</h3>
+    <p class="text-[0.6rem] text-slate-500 font-medium">Ralph Kimball • Dimensional Modeling</p>
+  </div>
+  <div class="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-3">
+    <div class="text-sky-500 text-xs font-black uppercase tracking-widest">ML / AI</div>
+    <h3 class="text-sm font-bold text-white leading-tight italic">Hands-On Machine Learning</h3>
+    <p class="text-[0.6rem] text-slate-500 font-medium">Aurélien Géron • Scikit-Learn, Keras & TF</p>
+  </div>
+  <div class="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-3">
+    <div class="text-sky-500 text-xs font-black uppercase tracking-widest">Estatística</div>
+    <h3 class="text-sm font-bold text-white leading-tight italic">Statistics: What It Is, For?</h3>
+    <p class="text-[0.6rem] text-slate-500 font-medium">Charles Wheelan • Fundamentos para DS</p>
   </div>
 </div>
 
@@ -388,42 +412,7 @@ const deuteroSim = (() => {
   </div>
 
   <div class="w-full bg-slate-950/40 rounded-[2rem] overflow-hidden border border-slate-800 p-2 sm:p-6 backdrop-blur-xl">
-    ${resize((width) => Plot.plot({
-      width,
-      height: 450,
-      grid: true,
-      x: { label: "Longevidade Historica (Anos) →", domain: [0, 1000] },
-      y: { label: "↑ Impacto / Sentimento (NLP Score)", domain: [-0.8, 1.2], ticks: 5 },
-      color: { 
-        domain: ["Queda", "Neutro", "Aliança", "Outlier Positivo", "Patriarca", "Outlier Máximo"],
-        range: ["#0c4a6e", "#0284c7", "#0ea5e9", "#7dd3fc", "#bae6fd", "#ffffff"]
-      },
-      marks: [
-        Plot.rectY([0], {x1: 0, x2: 1000, y1: 0, y2: 1.2, fill: "#bae6fd", opacity: 0.03}),
-        Plot.rectY([0], {x1: 0, x2: 1000, y1: -0.8, y2: 0, fill: "#0c4a6e", opacity: 0.05}),
-        Plot.ruleY([0], {stroke: "#334155", strokeWidth: 1, strokeDasharray: "4,4"}),
-        Plot.dot(mockupOutliers, {
-          x: "longevidade",
-          y: "nlp_score",
-          r: (d) => d.bubble_size / 2,
-          fill: "tipo",
-          stroke: "#0f172a",
-          strokeWidth: 3,
-          tip: true,
-          title: (d) => `${d.id}\nLongevidade: ${d.longevidade} anos\nScore NLP: ${d.nlp_score}\nNatureza: ${d.tipo}`
-        }),
-        Plot.text(mockupOutliers, {
-          x: "longevidade",
-          y: "nlp_score",
-          text: "id",
-          dy: (d) => -(d.bubble_size / 4 + 12),
-          fill: "#f8fafc",
-          fontSize: 13,
-          fontWeight: "900",
-          textShadow: "0 2px 4px rgba(0,0,0,0.8)"
-        })
-      ]
-    }))}
+${outliersView}
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">

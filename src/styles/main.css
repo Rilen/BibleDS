@@ -22,34 +22,65 @@ body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     margin: 0;
     -webkit-font-smoothing: antialiased;
+    width: 100vw !important;
+    overflow-x: hidden;
 }
 
-/* Unlock Full Width for Dashboards */
-main,
-#observablehq-main,
-.observablehq,
-.observablehq-block {
+/* --- GLOBAL LAYOUT RESETS --- */
+/* Override Observable Framework default 640px width limit on content elements */
+#observablehq-main p,
+#observablehq-main table,
+#observablehq-main figure,
+#observablehq-main figcaption,
+#observablehq-main h1,
+#observablehq-main h2,
+#observablehq-main h3,
+#observablehq-main h4,
+#observablehq-main h5,
+#observablehq-main h6,
+#observablehq-main .katex-display,
+#observablehq-main blockquote,
+#observablehq-main ul,
+#observablehq-main ol,
+#observablehq-main .observablehq-row,
+#observablehq-main .observablehq--block {
     max-width: none !important;
-    margin: 0 !important;
-    padding: 2rem !important;
     width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-#observablehq-center {
-    max-width: none !important;
-    margin: 0 !important;
-    width: 100% !important;
-    /* Removed display: flex to prevent plot pinching */
-}
-
-body:not(.sidebar-open) #observablehq-main {
-    margin-left: 0 !important;
 }
 
 #observablehq-main {
-    padding-top: 80px !important;
-    /* Refined space for premium header */
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 2rem !important;
+    padding-top: 100px !important;
+    /* Offset for premium header */
+    min-height: 100vh;
+}
+
+#observablehq-center {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+}
+
+/* Force article and direct children to extend full width */
+article,
+.observablehq {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+}
+
+/* Hide Sidebar & TOC to reclaim space per user request for 100% width */
+aside,
+.observablehq--sidebar,
+.observablehq--toc {
+    display: none !important;
 }
 
 /* Premium Navigation Header */
@@ -68,6 +99,8 @@ body:not(.sidebar-open) #observablehq-main {
     justify-content: space-between;
     padding: 0 2rem;
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    width: 100% !important;
+    max-width: none !important;
 }
 
 .premium-nav .logo {
@@ -383,12 +416,66 @@ select:focus,
     white-space: nowrap !important;
 }
 
-.radio-container label:hover {
-    background: rgba(56, 189, 248, 0.1) !important;
-    color: var(--brand-primary) !important;
+/* Premium Horizontal Radio Overrides for Observable Inputs */
+form[class*="observablehq--input-radio"],
+.radio-container form {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
 }
 
-.radio-container input[type="radio"] {
-    width: auto !important;
+form[class*="observablehq--input-radio"]>div,
+.radio-container form>div {
     margin: 0 !important;
+    background: rgba(15, 23, 42, 0.4) !important;
+    border: 1px solid rgba(51, 65, 85, 0.4) !important;
+    padding: 6px 12px !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+form[class*="observablehq--input-radio"]>div:hover,
+.radio-container form>div:hover {
+    background: rgba(56, 189, 248, 0.08) !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    transform: translateY(-1px);
+}
+
+form[class*="observablehq--input-radio"] input,
+.radio-container form input {
+    accent-color: var(--brand-primary) !important;
+    margin: 0 !important;
+}
+
+form[class*="observablehq--input-radio"] label,
+.radio-container form label {
+    color: #94a3b8 !important;
+    font-weight: 800 !important;
+    font-size: 0.65rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+form[class*="observablehq--input-radio"]>div:has(input:checked),
+.radio-container form>div:has(input:checked) {
+    background: rgba(56, 189, 248, 0.15) !important;
+    border-color: var(--brand-primary) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
+}
+
+form[class*="observablehq--input-radio"]>div:has(input:checked) label,
+.radio-container form>div:has(input:checked) label {
+    color: #fff !important;
 }

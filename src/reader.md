@@ -5,12 +5,10 @@ toc: false
 sidebar: false
 ---
 
-
-
-<div class="px-2 py-4">
-  <header class="mb-8 animate-reveal">
+<div class="w-full">
+  <header class="mb-12 animate-reveal">
     <h1 class="text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
-      <span class="w-1.5 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
+      <span class="w-3 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
       Leitor <span class="text-sky-500 italic">Semântico</span>
     </h1>
     <p class="text-slate-400 font-medium tracking-widest uppercase text-xs opacity-60">Engine de NLP Ativa • Mineração de Dados</p>
@@ -158,6 +156,47 @@ const uniqueWords = wordsMap.size;
 const sortedWords = Array.from(wordsMap.entries())
   .sort((a, b) => b[1] - a[1])
   .slice(0, 10);
+
+// --- EXPANSÃO: Detecção de Entidades & Sentiment Alignment ---
+const charactersDB = await FileAttachment("data/characters.json").json();
+const fullChapterText = verses.join(" ");
+const detectedEntities = charactersDB
+  .filter(c => fullChapterText.includes(c.nome))
+  .map(c => {
+    // Conta ocorrências reais
+    const regex = new RegExp(`\\b${c.nome}\\b`, 'gi');
+    const matches = fullChapterText.match(regex);
+    return { ...c, count: matches ? matches.length : 0 };
+  })
+  .filter(c => c.count > 0)
+  .sort((a, b) => b.count - a.count);
+
+// Mockup de Sentimento (Baseado em palavras chave positivas/negativas)
+const sentimentScore = (() => {
+  const pos = ['deus', 'senhor', 'amor', 'paz', 'alegria', 'luz', 'vida', 'bênção'];
+  const neg = ['morte', 'pecado', 'dor', 'trevas', 'mal', 'inimigo', 'castigo', 'fome'];
+  let score = 50;
+  verses.forEach(v => {
+    const low = v.toLowerCase();
+    pos.forEach(p => { if(low.includes(p)) score += 2; });
+    neg.forEach(n => { if(low.includes(n)) score -= 2; });
+  });
+  return Math.max(0, Math.min(100, score));
+})();
+// Função para destacar entidades no texto
+const highlightEntities = (text) => {
+  if (!detectedEntities.length) return text;
+  const names = detectedEntities.map(e => e.nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  const regex = new RegExp(`\\b(${names})\\b`, 'gi');
+  const parts = text.split(regex);
+  return html`${parts.map((part, i) => {
+    if (i % 2 === 1) {
+      const entity = detectedEntities.find(e => e.nome.toLowerCase() === part.toLowerCase());
+      return html`<a href="/curiosidades?search=${part}" class="text-sky-400 font-bold hover:underline decoration-sky-500/30 underline-offset-4" title="${entity?.desc || ''}">${part}</a>`;
+    }
+    return part;
+  })}`;
+};
 ```
 
 ```js
@@ -192,10 +231,10 @@ const readerUI = html`<div class="grid grid-cols-1 gap-6 px-1 animate-reveal w-f
     <div class="prose-bible mb-12 selection:bg-sky-500/30 text-lg sm:text-xl w-full max-w-none">
       <div class="w-full">
         ${verses.map((texto, indice) => html`
-          <p id="verse-${indice + 1}" class="mb-6 flex items-start gap-4 p-3 rounded-xl transition-all duration-500 w-full ${selectedVerseNum === indice + 1 ? 'bg-sky-900/40 border-l-4 border-sky-400 shadow-lg shadow-sky-500/10' : 'hover:bg-slate-700/10'}">
+          <div id="verse-${indice + 1}" class="mb-6 flex items-start gap-4 p-3 rounded-xl transition-all duration-500 w-full ${selectedVerseNum === indice + 1 ? 'bg-sky-900/40 border-l-4 border-sky-400 shadow-lg shadow-sky-500/10' : 'hover:bg-slate-700/10'}">
             <sup class="text-sky-500 font-black text-xs sm:text-sm mt-3.5 select-none shrink-0 w-6 text-right">${indice + 1}</sup> 
-            <span class="w-full text-slate-200 tracking-wide leading-relaxed">${texto}</span>
-          </p>
+            <span class="w-full text-slate-200 tracking-wide leading-relaxed">${highlightEntities(texto)}</span>
+          </div>
         `)}
       </div>
     </div>
@@ -218,14 +257,23 @@ const readerUI = html`<div class="grid grid-cols-1 gap-6 px-1 animate-reveal w-f
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
     <div class="card-premium p-6 shadow-xl w-full">
       <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Análise do Capítulo</h3>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-          <span class="block text-3xl font-black text-white italic transition-all hover:text-sky-400">${totalWords}</span>
-          <span class="text-[0.6rem] text-slate-500 uppercase font-bold tracking-tighter">Palavras Totais</span>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-slate-950/40 p-3 rounded-2xl border border-slate-800">
+          <span class="block text-2xl font-black text-white italic transition-all hover:text-sky-400">${totalWords}</span>
+          <span class="text-[0.5rem] text-slate-500 uppercase font-bold tracking-tighter">Total</span>
         </div>
-        <div class="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-          <span class="block text-3xl font-black text-sky-400 italic transition-all hover:text-white">${uniqueWords}</span>
-          <span class="text-[0.6rem] text-slate-500 uppercase font-bold tracking-tighter">Diversidade</span>
+        <div class="bg-slate-950/40 p-3 rounded-2xl border border-slate-800">
+          <span class="block text-2xl font-black text-sky-400 italic transition-all hover:text-white">${uniqueWords}</span>
+          <span class="text-[0.5rem] text-slate-500 uppercase font-bold tracking-tighter">Únicas</span>
+        </div>
+        <div class="bg-slate-950/40 p-3 rounded-2xl border border-slate-800 flex flex-col justify-center">
+          <div class="flex justify-between items-center mb-1">
+             <span class="text-[0.45rem] text-slate-500 uppercase font-black tracking-widest leading-none">Vibe</span>
+             <span class="text-[0.5rem] ${sentimentScore > 50 ? 'text-emerald-400' : 'text-amber-400'} font-black">${sentimentScore}%</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+             <div class="h-full ${sentimentScore > 50 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]' : 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.8)]'} transition-all duration-1000" style="width: ${sentimentScore}%"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -242,22 +290,31 @@ const readerUI = html`<div class="grid grid-cols-1 gap-6 px-1 animate-reveal w-f
       </div>
     </div>
 
-    <!-- Contextual Timeline -->
+    <!-- Dynamic Entity Recognition -->
     <div class="card-premium p-6 shadow-xl w-full">
-      <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Personagens no Escopo</h3>
+      <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Mencionado no Capítulo</h3>
       <div class="w-full">
-        ${(() => {
-          const mockupContextualTimeline = [
-            { nome: "Entidade A", inicio: 0, fim: 930 },
-            { nome: "Entidade B", inicio: 130, fim: 1042 },
-            { nome: "Entidade C", inicio: 235, fim: 1140 }
-          ];
-          return resize((width) => Plot.plot({
-            width, height: 160, marginLeft: 60,
-            x: { label: null }, y: { label: null },
-            marks: [ Plot.barX(mockupContextualTimeline, { x1: "inicio", x2: "fim", y: "nome", fill: "#38bdf8", rx: 4, tip: true }) ]
-          }));
-        })()}
+        ${detectedEntities.length > 0 
+          ? resize((width) => Plot.plot({
+              width, height: 160, marginLeft: 80,
+              x: { label: "Frequência", grid: true },
+              y: { label: null },
+              marks: [
+                Plot.barX(detectedEntities.slice(0, 5), { 
+                  x: "count", y: "nome", 
+                  fill: "count", 
+                  fillOpacity: 0.8,
+                  tip: true 
+                }),
+                Plot.text(detectedEntities.slice(0, 5), {
+                  x: "count", y: "nome", text: d => `${d.count}x`,
+                  dx: 15, fill: "white", fontWeight: "bold"
+                })
+              ],
+              color: { scheme: "blues" }
+            }))
+          : html`<div class="h-[160px] flex items-center justify-center text-slate-600 italic text-xs uppercase tracking-widest border border-dashed border-slate-800 rounded-xl">Nenhuma entidade identificada</div>`
+        }
       </div>
     </div>
   </div>
@@ -277,6 +334,4 @@ if (selectedVerseNum) {
 ```
 
 ${readerUI}
-
-
-
+</div>
