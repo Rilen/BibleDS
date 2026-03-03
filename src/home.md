@@ -1,13 +1,15 @@
 ---
-title: Explorador Bíblico
+title: Estudos Bíblicos
 theme: [dark, slate]
+toc: false
+sidebar: false
 ---
 
 <div class="px-4 py-8">
   <header class="mb-12 animate-reveal">
     <h1 class="text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
       <span class="w-2 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
-      Explorador <span class="text-sky-500 italic">Canônico</span>
+      Estudos <span class="text-sky-500 italic">Canônico</span>
     </h1>
     <p class="text-slate-400 font-medium tracking-widest uppercase text-xs opacity-60">Matriz de Navegação Bíblica • Filtros Inteligentes</p>
   </header>

@@ -43,24 +43,41 @@ export default {
       </div>
       <div class="links">
         <a href="/" class="nav-link">Dashboard</a>
-        <a href="/home" class="nav-link">Explorador</a>
-        <a href="/reader" class="nav-link">Leitor</a>
+        <a href="/home" class="nav-link">Estudos</a>
+        <a href="/curiosidades" class="nav-link">Curiosidades</a>
+        <a href="/mapa" class="nav-link">Mapa Histórico</a>
+        <a href="/lab" class="nav-link">Laboratório IA</a>
       </div>
       <div class="hidden sm:block text-[0.6rem] font-black text-slate-500 uppercase tracking-widest opacity-50">
         AI-Driven Semantic Engine v2.0
       </div>
     </nav>
+    <style>
+      .nav-link.active {
+        color: #f8fafc !important;
+        background-color: rgba(56, 189, 248, 0.1) !important;
+        border-bottom: 2px solid #38bdf8 !important;
+        font-weight: 800 !important;
+      }
+    </style>
     <script>
-      // Lógica Simples para destacar o link ativo
-      document.addEventListener('DOMContentLoaded', () => {
+      function updateActiveLink() {
         const links = document.querySelectorAll('.nav-link');
         const currentPath = window.location.pathname;
         links.forEach(link => {
-          if (link.getAttribute('href') === currentPath || 
-              (currentPath === '/index' && link.getAttribute('href') === '/')) {
+          const href = link.getAttribute('href');
+          if (href === currentPath || (currentPath === '/index' && href === '/') || currentPath.startsWith(href + '.html')) {
             link.classList.add('active');
+          } else {
+            link.classList.remove('active');
           }
         });
+      }
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        updateActiveLink();
+        const observer = new MutationObserver(updateActiveLink);
+        observer.observe(document.body, { childList: true, subtree: true });
       });
     </script>
   `,

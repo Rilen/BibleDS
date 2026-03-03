@@ -7,11 +7,12 @@
     --brand-primary: #38bdf8;
     --brand-dark: #0f172a;
     --brand-slate: #1e293b;
+    --brand-deeper: #020617;
 
     /* Observable Framework Native Overrides */
-    --observablehq-sidebar-background: #020617;
-    --observablehq-sidebar-border: #1e293b;
-    --observablehq-accent: #38bdf8;
+    --observablehq-sidebar-background: var(--brand-deeper);
+    --observablehq-sidebar-border: var(--brand-slate);
+    --observablehq-accent: var(--brand-primary);
 }
 
 /* Base resets & Typography */
@@ -26,16 +27,29 @@ body {
 /* Unlock Full Width for Dashboards */
 main,
 #observablehq-main,
-#observablehq-center {
+.observablehq,
+.observablehq-block {
     max-width: none !important;
     margin: 0 !important;
     padding: 2rem !important;
     width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#observablehq-center {
+    max-width: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    /* Removed display: flex to prevent plot pinching */
+}
+
+body:not(.sidebar-open) #observablehq-main {
+    margin-left: 0 !important;
 }
 
 #observablehq-main {
-    padding-top: 70px !important;
-    /* Space for the fixed header */
+    padding-top: 80px !important;
+    /* Refined space for premium header */
 }
 
 /* Premium Navigation Header */
@@ -45,7 +59,7 @@ main,
     left: 0;
     right: 0;
     z-index: 50;
-    background: rgba(2, 6, 23, 0.8);
+    background: rgba(2, 6, 23, 0.85);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(30, 41, 59, 0.8);
     height: 70px;
@@ -85,7 +99,7 @@ main,
 }
 
 .premium-nav .links a:hover {
-    color: #38bdf8;
+    color: var(--brand-primary);
     background: rgba(56, 189, 248, 0.05);
 }
 
@@ -110,20 +124,19 @@ h6 {
 /* --- SIDEBAR TAILWIND STANDARDIZATION --- */
 aside,
 .observablehq--sidebar {
-    background-color: #020617 !important;
-    border-right: 1px solid #1e293b !important;
+    background-color: var(--brand-deeper) !important;
+    border-right: 1px solid var(--brand-slate) !important;
     box-shadow: 10px 0 30px -15px rgba(0, 0, 0, 0.5);
 }
 
 .observablehq--sidebar header {
-    border-bottom: 1px solid #1e293b !important;
+    border-bottom: 1px solid var(--brand-slate) !important;
     padding: 1.5rem !important;
     margin-bottom: 1rem !important;
 }
 
 .observablehq--sidebar header h1 {
     font-weight: 900 !important;
-    font-size: 0.85rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.2em !important;
     color: #f8fafc !important;
@@ -135,18 +148,16 @@ aside,
 
 .observablehq--sidebar a {
     color: #94a3b8 !important;
-    font-size: 0.75rem !important;
     font-weight: 600 !important;
     padding: 0.625rem 1rem !important;
     margin-bottom: 0.25rem !important;
     border-radius: 0.75rem !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border: 1px solid transparent !important;
 }
 
 .observablehq--sidebar a:hover {
     background-color: rgba(56, 189, 248, 0.05) !important;
-    color: #38bdf8 !important;
+    color: var(--brand-primary) !important;
     transform: translateX(4px);
 }
 
@@ -156,7 +167,6 @@ aside,
     color: #f8fafc !important;
     border: 1px solid rgba(56, 189, 248, 0.2) !important;
     font-weight: 800 !important;
-    box-shadow: 0 4px 12px -2px rgba(56, 189, 248, 0.15) !important;
 }
 
 /* --- UI COMPONENTS --- */
@@ -175,7 +185,6 @@ aside,
 .card-premium:hover {
     border-color: rgba(56, 189, 248, 0.4);
     background: rgba(30, 41, 59, 0.5);
-    box-shadow: 0 25px 50px -12px rgba(56, 189, 248, 0.1);
 }
 
 /* KPI Style Card */
@@ -204,10 +213,10 @@ aside,
     align-items: center;
     justify-content: center;
     padding: 0.875rem 1.75rem;
-    background-color: #020617;
-    border: 1px solid #1e293b;
+    background-color: var(--brand-deeper);
+    border: 1px solid var(--brand-slate);
     border-radius: 1rem;
-    color: #38bdf8;
+    color: var(--brand-primary);
     font-weight: 900;
     font-size: 0.7rem;
     text-transform: uppercase;
@@ -218,11 +227,9 @@ aside,
 }
 
 .btn-nav:hover {
-    background-color: #38bdf8;
-    border-color: #38bdf8;
-    color: #020617;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.4);
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: var(--brand-deeper);
 }
 
 /* Custom Tooltips for Plots */
@@ -230,19 +237,14 @@ aside,
 ._plot-tip,
 .observablehq--plot-tip,
 div[style*="background: white"],
-div[style*="background-color: white"],
-div[style*="background-color: #ffffff"],
-div[style*="background: rgb(255, 255, 255)"] {
+div[style*="background-color: white"] {
     color: #ffffff !important;
     background-color: rgba(15, 23, 42, 0.95) !important;
     backdrop-filter: blur(12px) !important;
     font-weight: 600 !important;
     border-radius: 1rem !important;
     padding: 14px 18px !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
     border: 1px solid rgba(56, 189, 248, 0.4) !important;
-    font-size: 0.8rem !important;
-    line-height: 1.6 !important;
 }
 
 [class*="plot-tip"] *,
@@ -250,44 +252,24 @@ div[style*="background: rgb(255, 255, 255)"] {
     color: #ffffff !important;
 }
 
-/* Custom Scrollbar for wrappers */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 8px;
-    /* For horizontal scrolls */
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(51, 65, 85, 0.5);
-    border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(56, 189, 248, 0.5);
-}
-
-/* TV Optimized Scrollbar Global */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #020617;
+    background: var(--brand-deeper);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: var(--brand-slate);
     border-radius: 10px;
-    border: 4px solid #020617;
+    border: 2px solid var(--brand-deeper);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #38bdf8;
+    background: var(--brand-primary);
 }
 
 /* Typography for Biblical Text */
@@ -298,26 +280,27 @@ div[style*="background: rgb(255, 255, 255)"] {
     color: #cbd5e1;
 }
 
-.prose-bible sup {
-    font-family: 'Inter', sans-serif;
-}
-
 /* Inputs Standardizer */
 input,
 select,
-.observablehq-input {
-    background: #020617 !important;
-    border: 1px solid #1e293b !important;
+.observablehq-input,
+.observablehq-input select {
+    background: var(--brand-deeper) !important;
+    border: 1px solid var(--brand-slate) !important;
     color: #f8fafc !important;
     border-radius: 0.5rem !important;
     padding: 0.5rem 0.75rem !important;
     font-size: 0.85rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
-input:focus {
-    border-color: #38bdf8 !important;
+input:focus,
+select:focus,
+.observablehq-input select:focus {
+    border-color: var(--brand-primary) !important;
     outline: none !important;
-    box-shadow: 0 0 0 1px #38bdf8 !important;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
 }
 
 /* --- OBSERVABLE FRAMEWORK ADD-ONS --- */
@@ -325,7 +308,7 @@ input:focus {
 /* Table of Contents (TOC) */
 .observablehq--toc {
     background-color: transparent !important;
-    border-left: 1px solid #1e293b !important;
+    border-left: 1px solid var(--brand-slate) !important;
     padding-left: 2rem !important;
 }
 
@@ -335,7 +318,6 @@ input:focus {
     letter-spacing: 0.1em !important;
     font-size: 0.65rem !important;
     color: #64748b !important;
-    margin-bottom: 1.5rem !important;
 }
 
 .observablehq--toc a {
@@ -346,12 +328,7 @@ input:focus {
 }
 
 .observablehq--toc a:hover {
-    color: #38bdf8 !important;
-}
-
-.observablehq--toc .observablehq--toc-active {
-    color: #f8fafc !important;
-    font-weight: 700 !important;
+    color: var(--brand-primary) !important;
 }
 
 @keyframes fadeIn {
@@ -384,4 +361,34 @@ input:focus {
 
 .animate-slide-up {
     animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Specific Style for Radio Filters */
+.radio-container div[role="radiogroup"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+    color: #94a3b8 !important;
+    font-weight: 600 !important;
+}
+
+.radio-container label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    cursor: pointer !important;
+    padding: 0.25rem 0.6rem !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+}
+
+.radio-container label:hover {
+    background: rgba(56, 189, 248, 0.1) !important;
+    color: var(--brand-primary) !important;
+}
+
+.radio-container input[type="radio"] {
+    width: auto !important;
+    margin: 0 !important;
 }

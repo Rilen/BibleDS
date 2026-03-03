@@ -1,9 +1,13 @@
 ---
 title: Leitor e Análise Semântica
 theme: [dark, slate]
+toc: false
+sidebar: false
 ---
 
-<div class="px-4 py-8">
+
+
+<div class="px-2 py-4">
   <header class="mb-8 animate-reveal">
     <h1 class="text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
       <span class="w-1.5 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
@@ -115,6 +119,12 @@ const chapterOptions = Array.from({length: maxChapters}, (_, i) => i + 1);
 const chapterInputObj = Inputs.select(chapterOptions, {value: Math.min(initialChapter, maxChapters), label: "Capítulo"});
 const selectedChapterNum = Generators.input(chapterInputObj);
 const chapterInputView = chapterInputObj;
+
+const maxVerses = currentBookData[Math.max(1, Math.min(initialChapter, maxChapters)) - 1]?.length || 1;
+const verseOptions = Array.from({length: maxVerses}, (_, i) => i + 1);
+const verseInputObj = Inputs.select(verseOptions, {value: 1, label: ""});
+const selectedVerseNum = Generators.input(verseInputObj);
+const verseInputView = verseInputObj;
 ```
 
 ```js
@@ -159,22 +169,35 @@ window.history.replaceState({}, "", newUrl);
 ```
 
 ```js
-const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 animate-reveal">
-  <!-- Main Reader Area -->
-  <div class="lg:col-span-8 card-premium p-6 sm:p-10 shadow-2xl backdrop-blur-md">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-slate-800 pb-8">
+const readerUI = html`<div class="grid grid-cols-1 gap-6 px-1 animate-reveal w-full">
+  <!-- Main Reader Area - 100% Width -->
+  <div class="card-premium p-6 sm:p-10 shadow-2xl backdrop-blur-md w-full">
+    <div class="flex flex-col gap-6 mb-10 border-b border-slate-800 pb-8">
       <div>
-        <h2 class="text-3xl font-black text-white tracking-tighter mb-1">${bookMeta.nome}</h2>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter mb-1">${bookMeta.nome}</h2>
         <p class="text-[0.6rem] text-slate-500 font-black uppercase tracking-[0.2em]">Cânon Bíblico • Tradução Literária</p>
       </div>
-      <div class="bg-black/40 p-3 rounded-2xl border border-slate-800 shadow-inner group-hover:border-sky-500/50 transition-all">
-        <label class="text-[0.55rem] font-black text-slate-500 uppercase tracking-widest mb-1 block">Selecione o Capítulo</label>
-        ${chapterInputView}
+      <div class="flex flex-col sm:flex-row gap-4 w-full">
+        <div class="bg-black/40 p-4 rounded-2xl border border-slate-800 shadow-inner hover:border-sky-500/50 transition-all w-full sm:w-1/2">
+          <label class="text-[0.55rem] font-black text-slate-500 uppercase tracking-widest mb-1 block">Selecione o Capítulo</label>
+          ${chapterInputView}
+        </div>
+        <div class="bg-black/40 p-4 rounded-2xl border border-slate-800 shadow-inner hover:border-sky-500/50 transition-all w-full sm:w-1/2">
+          <label class="text-[0.55rem] font-black text-slate-500 uppercase tracking-widest mb-1 block">Escolher Versículo</label>
+          ${verseInputView}
+        </div>
       </div>
     </div>
     
-    <div class="prose-bible mb-12 selection:bg-sky-500/30">
-      <div>${verses.map((texto, indice) => html`<p class="mb-6 flex items-start gap-4 hover:bg-slate-700/10 p-2 rounded-lg transition-colors"><sup class="text-sky-500 font-black text-sm mt-3 select-none">${indice + 1}</sup> <span>${texto}</span></p>`)}</div>
+    <div class="prose-bible mb-12 selection:bg-sky-500/30 text-lg sm:text-xl w-full max-w-none">
+      <div class="w-full">
+        ${verses.map((texto, indice) => html`
+          <p id="verse-${indice + 1}" class="mb-6 flex items-start gap-4 p-3 rounded-xl transition-all duration-500 w-full ${selectedVerseNum === indice + 1 ? 'bg-sky-900/40 border-l-4 border-sky-400 shadow-lg shadow-sky-500/10' : 'hover:bg-slate-700/10'}">
+            <sup class="text-sky-500 font-black text-xs sm:text-sm mt-3.5 select-none shrink-0 w-6 text-right">${indice + 1}</sup> 
+            <span class="w-full text-slate-200 tracking-wide leading-relaxed">${texto}</span>
+          </p>
+        `)}
+      </div>
     </div>
 
     <!-- Navigation Buttons -->
@@ -191,9 +214,9 @@ const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 an
     </div>
   </div>
 
-  <!-- NLP Similarity Analysis Panel -->
-  <div class="lg:col-span-4 space-y-6">
-    <div class="card-premium p-6 shadow-xl">
+  <!-- NLP Similarity Analysis Panel (Grid Horizontal Inferior) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+    <div class="card-premium p-6 shadow-xl w-full">
       <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Análise do Capítulo</h3>
       <div class="grid grid-cols-2 gap-4">
         <div class="bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
@@ -207,7 +230,7 @@ const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 an
       </div>
     </div>
 
-    <div class="card-premium p-6 shadow-xl">
+    <div class="card-premium p-6 shadow-xl w-full">
       <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Nuvem de Mineração (Top 10)</h3>
       <div class="space-y-2">
         <div class="flex flex-wrap gap-2">${sortedWords.map(([word, count]) => html`
@@ -220,7 +243,7 @@ const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 an
     </div>
 
     <!-- Contextual Timeline -->
-    <div class="card-premium p-6 shadow-xl">
+    <div class="card-premium p-6 shadow-xl w-full">
       <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Personagens no Escopo</h3>
       <div class="w-full">
         ${(() => {
@@ -239,6 +262,18 @@ const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 an
     </div>
   </div>
 </div>`;
+```
+
+```js
+// Scroll dinâmico para o versículo selecionado
+if (selectedVerseNum) {
+  setTimeout(() => {
+    const el = document.getElementById(`verse-${selectedVerseNum}`);
+    if(el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, 150);
+}
 ```
 
 ${readerUI}
