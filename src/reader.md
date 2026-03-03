@@ -174,7 +174,7 @@ const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 an
     </div>
     
     <div class="prose-bible mb-12 selection:bg-sky-500/30">
-      ${html`<div>${verses.map((texto, indice) => html`<p class="mb-6 flex items-start gap-4 hover:bg-slate-700/10 p-2 rounded-lg transition-colors"><sup class="text-sky-500 font-black text-sm mt-3 select-none">${indice + 1}</sup> <span>${texto}</span></p>`)}</div>`}
+      <div>${verses.map((texto, indice) => html`<p class="mb-6 flex items-start gap-4 hover:bg-slate-700/10 p-2 rounded-lg transition-colors"><sup class="text-sky-500 font-black text-sm mt-3 select-none">${indice + 1}</sup> <span>${texto}</span></p>`)}</div>
     </div>
 
     <!-- Navigation Buttons -->
@@ -210,12 +210,12 @@ const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 an
     <div class="card-premium p-6 shadow-xl">
       <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Nuvem de Mineração (Top 10)</h3>
       <div class="space-y-2">
-        ${html`<div class="flex flex-wrap gap-2">${sortedWords.map(([word, count]) => html`
+        <div class="flex flex-wrap gap-2">${sortedWords.map(([word, count]) => html`
            <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-full hover:border-sky-500 transition-colors group">
              <span class="text-slate-300 font-bold text-xs capitalize group-hover:text-white">${word}</span>
              <span class="bg-slate-800 text-[0.6rem] px-1.5 py-0.5 rounded-md text-sky-400 font-black">${count}</span>
            </div>
-        `)}</div>`}
+        `)}</div>
       </div>
     </div>
 
@@ -238,7 +238,7 @@ const readerUI = html`<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-1 an
       </div>
     </div>
   </div>
-</div>
+</div>`;
 ```
 
 ${readerUI}

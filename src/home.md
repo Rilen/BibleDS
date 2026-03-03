@@ -87,7 +87,7 @@ const booksGrid = html`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-
 ${booksGrid}
 
 ```js
-const searchInputObj = Inputs.search(books, {placeholder: "Pesquisar por nome, tema (#amor, #lei) ou conceito..."});
+const searchInputObj = Inputs.text({placeholder: "Pesquisar por nome, tema (#amor, #lei) ou conceito..."});
 const searchInputValue = Generators.input(searchInputObj);
 const searchInputView = searchInputObj;
 ```

@@ -30,21 +30,41 @@ export default {
   theme: ["dark", "slate"],
 
   // Configurações de layout
-  toc: true, // Table of contents
+  sidebar: false, // Desativa o menu lateral por padrão
+  toc: false, // Desativa o Table of Contents para ganhar 100% de largura
   pager: false, // Sem links "próximo/anterior" no rodapé
 
-  // Caminho raiz
-  root: "src",
+  // Cabeçalho Premium Customizado (Substituindo o Sidebar)
+  header: `
+    <nav class="premium-nav">
+      <div class="logo">
+        <span class="w-2 h-6 bg-sky-500 rounded-full shadow-[0_0_15px_rgba(56,189,248,0.5)]"></span>
+        BibleDS <span class="text-sky-500 italic">Hyper-Analytics</span>
+      </div>
+      <div class="links">
+        <a href="/" class="nav-link">Dashboard</a>
+        <a href="/home" class="nav-link">Explorador</a>
+        <a href="/reader" class="nav-link">Leitor</a>
+      </div>
+      <div class="hidden sm:block text-[0.6rem] font-black text-slate-500 uppercase tracking-widest opacity-50">
+        AI-Driven Semantic Engine v2.0
+      </div>
+    </nav>
+    <script>
+      // Lógica Simples para destacar o link ativo
+      document.addEventListener('DOMContentLoaded', () => {
+        const links = document.querySelectorAll('.nav-link');
+        const currentPath = window.location.pathname;
+        links.forEach(link => {
+          if (link.getAttribute('href') === currentPath || 
+              (currentPath === '/index' && link.getAttribute('href') === '/')) {
+            link.classList.add('active');
+          }
+        });
+      });
+    </script>
+  `,
 
-  // Menu de navegação lateral
-  pages: [
-    {
-      name: "Hyper-Analysis",
-      pages: [
-        { name: "Executive Dashboard", path: "/index" },
-        { name: "Canonical Index", path: "/home" },
-        { name: "Semantic Reader", path: "/reader" }
-      ]
-    }
-  ]
+  // Caminho raiz
+  root: "src"
 };

@@ -124,52 +124,57 @@ const plotView = Plot.plot({
 
 
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-12 animate-reveal">
+<div class="grid grid-cols-1 gap-6 mt-12 animate-reveal">
   <div class="card-premium p-6">
     <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-4">Volume Absoluto por Livro</h2>
-    ${resize((width) => Plot.plot({
-      width,
-      height: 300,
-      marginLeft: 60,
-      marginBottom: 80,
-      x: { label: null, tickRotate: -45 },
-      y: { label: "Palavras Totais" },
-      color: { legend: true, domain: ["VT", "NT"], range: ["#38bdf8", "#818cf8"] },
-      marks: [
-        Plot.barY(filteredBooks, {
-          x: "nome",
-          y: "rawWords",
-          fill: "testamento",
-          title: (d) => `${d.nome}\n${d.rawWords.toLocaleString()} Palavras Totais`,
-          tip: { fill: "#0f172a", stroke: "#38bdf8" }
-        }),
-        Plot.ruleY([0])
-      ]
-    }))}
+    <div class="overflow-x-auto w-full custom-scrollbar pb-4">
+      ${resize((width) => Plot.plot({
+        width: Math.max(width || 1000, 1800),
+        height: 380,
+        marginLeft: 60,
+        marginBottom: 90,
+        x: { label: null, tickRotate: -45 },
+        y: { label: "Palavras Totais" },
+        color: { legend: true, domain: ["VT", "NT"], range: ["#38bdf8", "#818cf8"] },
+        marks: [
+          Plot.barY(filteredBooks, {
+            x: "nome",
+            y: "rawWords",
+            fill: "testamento",
+            title: (d) => `${d.nome}\n${d.rawWords.toLocaleString()} Palavras Totais`,
+            tip: { fill: "#0f172a", stroke: "#38bdf8" }
+          }),
+          Plot.ruleY([0])
+        ]
+      }))}
+    </div>
   </div>
+
   
   <div class="card-premium p-6">
     <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-4">Índice de Densidade (Palavras/Versículo)</h2>
-    ${resize((width) => Plot.plot({
-      width,
-      height: 300,
-      marginLeft: 40,
-      marginBottom: 80,
-      x: { label: null, tickRotate: -45 },
-      y: { label: "Palavras por Versículo" },
-      marks: [
-        Plot.lineY(filteredBooks, {
-          x: "nome",
-          y: "wordsPerVerse",
-          stroke: "#f472b6",
-          strokeWidth: 2,
-          curve: "natural",
-          tip: { fill: "#0f172a", stroke: "#38bdf8" },
-          title: (d) => `${d.nome}\n${d.wordsPerVerse} plv/versículo\nTotal de Versículos: ${d.totalVerses}`
-        }),
-        Plot.ruleY([0])
-      ]
-    }))}
+    <div class="overflow-x-auto w-full custom-scrollbar pb-4">
+      ${resize((width) => Plot.plot({
+        width: Math.max(width || 1000, 1800),
+        height: 380,
+        marginLeft: 40,
+        marginBottom: 90,
+        x: { label: null, tickRotate: -45 },
+        y: { label: "Palavras por Versículo" },
+        marks: [
+          Plot.lineY(filteredBooks, {
+            x: "nome",
+            y: "wordsPerVerse",
+            stroke: "#f472b6",
+            strokeWidth: 2,
+            curve: "natural",
+            tip: { fill: "#0f172a", stroke: "#38bdf8" },
+            title: (d) => `${d.nome}\n${d.wordsPerVerse} plv/versículo\nTotal de Versículos: ${d.totalVerses}`
+          }),
+          Plot.ruleY([0])
+        ]
+      }))}
+    </div>
   </div>
 </div>
 
@@ -437,9 +442,9 @@ const deuteroSim = (() => {
   <!-- 1.5 Linha do Tempo da Era Bíblica -->
   <div class="card-premium p-5 lg:col-span-12">
     <h2 class="text-[0.7rem] font-bold text-slate-500 uppercase tracking-widest mb-4">Timeline Eras</h2>
-    <div class="w-full h-40">
+    <div class="w-full">
       ${resize((width) => Plot.plot({
-        width, height: 160, marginLeft: 80, x: { label: null }, y: { label: null },
+        width, height: 350, marginLeft: 120, x: { label: null }, y: { label: null },
         marks: [ Plot.barX(mockupEras, { x1: "inicio", x2: "fim", y: "era", fill: "cor", rx: 4, tip: true }) ]
       }))}
     </div>
@@ -448,9 +453,9 @@ const deuteroSim = (() => {
   <!-- 2. Cronologia de Patriarcas -->
   <div class="card-premium p-5 lg:col-span-12">
     <h2 class="text-[0.7rem] font-bold text-slate-500 uppercase tracking-widest mb-2">Patriarcas Reativos</h2>
-    <div class="w-full h-40">
+    <div class="w-full">
       ${resize((width) => Plot.plot({
-        width, height: 140, marginLeft: 60, x: { label: null }, y: { label: null },
+        width, height: 350, marginLeft: 80, x: { label: null }, y: { label: null },
         marks: [ Plot.barX(filteredPatriarchs, { x1: "nascimento_ano", x2: "morte_ano", y: "id", fill: "#38bdf8", rx: 4, tip: true }) ]
       }))}
     </div>
@@ -459,9 +464,9 @@ const deuteroSim = (() => {
   <!-- 3. Tópicos LDA -->
   <div class="card-premium p-5 lg:col-span-12">
     <h2 class="text-[0.7rem] font-bold text-slate-500 uppercase tracking-widest mb-4">Tópicos (IA)</h2>
-    <div class="w-full h-40">
+    <div class="w-full">
       ${resize((width) => Plot.plot({
-        width, height: 160, marginLeft: 90, x: { label: null }, y: { label: null },
+        width, height: 250, marginLeft: 120, x: { label: null }, y: { label: null },
         marks: [ Plot.barX(mockupLDA, { x: "peso", y: "topico", fill: "peso", tip: true }) ]
       }))}
     </div>
@@ -518,7 +523,6 @@ const deuteroSim = (() => {
 </div>
 
 <!-- 10. Mapeamento de Outliers -->
-${html`
 <div class="card-premium p-6 sm:p-10 bg-slate-900 mt-12 animate-reveal shadow-sky-500/5">
   <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10">
     <div class="space-y-2">
@@ -557,7 +561,7 @@ ${html`
           stroke: "#0f172a",
           strokeWidth: 3,
           tip: true,
-          title: (d) => \`\${d.id}\\nLongevidade: \${d.longevidade} anos\\nScore NLP: \${d.nlp_score}\\nNatureza: \${d.tipo}\`
+          title: (d) => `${d.id}\nLongevidade: ${d.longevidade} anos\nScore NLP: ${d.nlp_score}\nNatureza: ${d.tipo}`
         }),
         Plot.text(mockupOutliers, {
           x: "longevidade",
@@ -595,9 +599,7 @@ ${html`
     </div>
   </div>
 </div>
-\`}
 
 ${html`<svg style="height: 0; width: 0; position: absolute;"><defs><linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#38bdf8"></stop><stop offset="100%" stop-color="#1e293b" stop-opacity="0"></stop></linearGradient></defs></svg>`}
-< / d i v > 
- 
- 
+</div>
+
