@@ -5,23 +5,28 @@ toc: false
 sidebar: false
 ---
 
+<!-- Reading Progress Bar -->
+<div id="reading-progress" class="reading-progress" style="width:0%"></div>
+
 <div class="w-full">
-  <header class="mb-12 animate-reveal">
-    <h1 class="text-4xl font-black text-white tracking-tighter mb-2 flex items-center gap-4">
-      <span class="w-3 h-10 bg-sky-500 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)]"></span>
-      Leitor <span class="text-sky-500 italic">Semântico</span>
+  <header class="page-header animate-reveal">
+    <h1>
+      <span class="h1-bar"></span>
+      Leitor <span style="color:#38bdf8;font-style:italic;">Semântico</span>
     </h1>
-    <p class="text-slate-400 font-medium tracking-widest uppercase text-xs opacity-60">Engine de NLP Ativa • Mineração de Dados</p>
+    <p class="subtitle">Engine NLP Ativa • Mineração de Dados • TTS Integrado</p>
   </header>
 
-<div class="mb-4 animate-reveal">
-  <a href="/home" class="text-sky-400 no-underline font-black text-[0.6rem] uppercase tracking-widest hover:text-white transition-colors">&larr; Voltar para o Índice Canônico</a>
+<div class="animate-reveal" style="margin-bottom:1.25rem;">
+  <a href="/home" style="color:#38bdf8;text-decoration:none;font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:0.75rem;border:1px solid rgba(56,189,248,0.2);transition:all 0.2s ease;">
+    ← Índice Canônico
+  </a>
 </div>
 
 ```js
-// Pegando parâmetros da URL (ex: ?book=genesis&chapter=1)
+// Parâmetros da URL
 const params = new URLSearchParams(window.location.search);
-const initialBook = params.get("book") || "genesis";
+const initialBook    = params.get("book")    || "genesis";
 const initialChapter = parseInt(params.get("chapter")) || 1;
 ```
 
@@ -105,37 +110,55 @@ function loadBookData(bookId) {
   }
 }
 
-// Carrega APENAS o JSON do livro solicitado
 const currentBookData = await loadBookData(initialBook);
-const booksIndex = await FileAttachment("data/booksIndex.json").json();
-const bookMeta = booksIndex.find(b => b.id === initialBook) || { nome: "Livro Desconhecido" };
+const booksIndex       = await FileAttachment("data/booksIndex.json").json();
+const bookMeta         = booksIndex.find(b => b.id === initialBook) || { nome: "Livro Desconhecido", chapters: 1 };
 ```
 
 ```js
-const maxChapters = currentBookData.length;
-const chapterOptions = Array.from({length: maxChapters}, (_, i) => i + 1);
-const chapterInputObj = Inputs.select(chapterOptions, {value: Math.min(initialChapter, maxChapters), label: "Capítulo"});
+const maxChapters  = currentBookData.length;
+const chapterInputObj = Inputs.select(
+  Array.from({length: maxChapters}, (_, i) => i + 1),
+  { value: Math.min(initialChapter, maxChapters), label: "Capítulo" }
+);
 const selectedChapterNum = Generators.input(chapterInputObj);
-const chapterInputView = chapterInputObj;
+const chapterInputView   = chapterInputObj;
 
 const maxVerses = currentBookData[Math.max(1, Math.min(initialChapter, maxChapters)) - 1]?.length || 1;
-const verseOptions = Array.from({length: maxVerses}, (_, i) => i + 1);
-const verseInputObj = Inputs.select(verseOptions, {value: 1, label: ""});
+const verseInputObj = Inputs.select(
+  Array.from({length: maxVerses}, (_, i) => i + 1),
+  { value: 1, label: "Versículo" }
+);
 const selectedVerseNum = Generators.input(verseInputObj);
-const verseInputView = verseInputObj;
+const verseInputView   = verseInputObj;
 ```
 
 ```js
 const verses = currentBookData[selectedChapterNum - 1] || [];
 
-// Engine de Análise Semântica
+// ── Engine NLP: Stop Words expandidas ──
 const stopWords = new Set([
-  'a', 'o', 'as', 'os', 'e', 'do', 'da', 'dos', 'das', 'no', 'na', 'nos', 'nas',
-  'em', 'um', 'uma', 'uns', 'umas', 'com', 'por', 'para', 'se', 'que', 'muito',
-  'pelo', 'pela', 'mais', 'meu', 'teu', 'seu', 'sua', 'isto', 'aquilo', 'este',
-  'esta', 'eles', 'elas', 'vós', 'nós', 'lhe', 'lhes', 'dele', 'dela', 'num', 'numa',
-  'através', 'então', 'entanto', 'pois', 'nem', 'também', 'porque', 'ele', 'ela', 
-  'como', 'quem', 'qual', 'foi', 'ao', 'aos', 'mas', 'não', 'ou', 'são', 'de'
+  // Artigos
+  'a','o','as','os','um','uma','uns','umas',
+  // Preposições
+  'a','de','do','da','dos','das','no','na','nos','nas','em','com','por','para',
+  'pelo','pela','pelos','pelas','ao','aos','à','às','sobre','entre','até',
+  'após','ante','perante','desde','sob','sem','contra','versus',
+  // Pronomes
+  'se','que','me','te','lhe','lhes','nos','vos','ele','ela','eles','elas',
+  'eu','tu','você','vocês','nós','vós','meu','teu','seu','nossa','vossa',
+  'sua','minha','dele','dela','deles','delas','isto','isso','aquilo',
+  'este','esta','estes','estas','esse','essa','esses','essas','aquele',
+  // Conjunções
+  'e','mas','ou','nem','porém','todavia','entretanto','contudo','logo',
+  'porque','pois','quando','se','embora','enquanto','embora','portanto',
+  // Verbos auxiliares comuns
+  'foi','ser','estar','ter','havia','houve','era','foram','será','são',
+  'tem','tinha','têm','fez','fará','disse','falou','também','muito',
+  // Advérbios
+  'não','sim','já','ainda','logo','mais','menos','sempre','nunca','jamais',
+  'ali','aí','aqui','lá','cá','assim','então','também','como','quem',
+  'qual','onde','quando','num','numa','nuns','numas','através','sobre'
 ]);
 
 let totalWords = 0;
@@ -146,24 +169,21 @@ verses.forEach(textoVersiculo => {
   const words = cleanText.split(/\s+/).filter(w => w.length > 2);
   words.forEach(w => {
     totalWords++;
-    if (!stopWords.has(w)) {
-      wordsMap.set(w, (wordsMap.get(w) || 0) + 1);
-    }
+    if (!stopWords.has(w)) wordsMap.set(w, (wordsMap.get(w) || 0) + 1);
   });
 });
 
-const uniqueWords = wordsMap.size;
-const sortedWords = Array.from(wordsMap.entries())
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 10);
+const uniqueWords  = wordsMap.size;
+const hapaxCount   = Array.from(wordsMap.values()).filter(c => c === 1).length;
+const richness     = uniqueWords > 0 ? Math.round((hapaxCount / uniqueWords) * 100) : 0;
+const sortedWords  = Array.from(wordsMap.entries()).sort((a, b) => b[1] - a[1]).slice(0, 12);
 
-// --- EXPANSÃO: Detecção de Entidades & Sentiment Alignment ---
+// Detecção de Entidades
 const charactersDB = await FileAttachment("data/characters.json").json();
 const fullChapterText = verses.join(" ");
 const detectedEntities = charactersDB
   .filter(c => fullChapterText.includes(c.nome))
   .map(c => {
-    // Conta ocorrências reais
     const regex = new RegExp(`\\b${c.nome}\\b`, 'gi');
     const matches = fullChapterText.match(regex);
     return { ...c, count: matches ? matches.length : 0 };
@@ -171,28 +191,29 @@ const detectedEntities = charactersDB
   .filter(c => c.count > 0)
   .sort((a, b) => b.count - a.count);
 
-// Mockup de Sentimento (Baseado em palavras chave positivas/negativas)
+// Score de Sentimento
 const sentimentScore = (() => {
-  const pos = ['deus', 'senhor', 'amor', 'paz', 'alegria', 'luz', 'vida', 'bênção'];
-  const neg = ['morte', 'pecado', 'dor', 'trevas', 'mal', 'inimigo', 'castigo', 'fome'];
+  const pos = ['deus','senhor','amor','paz','alegria','luz','vida','bênção','graça','salvação','glória','fé','esperança','santo','bem'];
+  const neg = ['morte','pecado','dor','trevas','mal','inimigo','castigo','fome','destruição','maldição','ira','guerra','sangue'];
   let score = 50;
   verses.forEach(v => {
     const low = v.toLowerCase();
-    pos.forEach(p => { if(low.includes(p)) score += 2; });
-    neg.forEach(n => { if(low.includes(n)) score -= 2; });
+    pos.forEach(p => { if (low.includes(p)) score += 2; });
+    neg.forEach(n => { if (low.includes(n)) score -= 2; });
   });
   return Math.max(0, Math.min(100, score));
 })();
-// Função para destacar entidades no texto
+
+// Destaca entidades como links
 const highlightEntities = (text) => {
   if (!detectedEntities.length) return text;
   const names = detectedEntities.map(e => e.nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
   const regex = new RegExp(`\\b(${names})\\b`, 'gi');
-  const parts = text.split(regex);
+  const parts  = text.split(regex);
   return html`${parts.map((part, i) => {
     if (i % 2 === 1) {
       const entity = detectedEntities.find(e => e.nome.toLowerCase() === part.toLowerCase());
-      return html`<a href="/curiosidades?search=${part}" class="text-sky-400 font-bold hover:underline decoration-sky-500/30 underline-offset-4" title="${entity?.desc || ''}">${part}</a>`;
+      return html`<a href="/curiosidades?search=${part}" style="color:#38bdf8;font-weight:700;text-decoration:none;border-bottom:1px dotted rgba(56,189,248,0.4);" title="${entity?.desc || ''}">${part}</a>`;
     }
     return part;
   })}`;
@@ -200,120 +221,170 @@ const highlightEntities = (text) => {
 ```
 
 ```js
-// Atualiza a URL sem recarregar a página para compartilhamento
+// Atualiza URL para compartilhamento
 const newUrl = new URL(window.location.href);
-newUrl.searchParams.set("book", initialBook);
+newUrl.searchParams.set("book",    initialBook);
 newUrl.searchParams.set("chapter", selectedChapterNum);
 window.history.replaceState({}, "", newUrl);
 ```
 
 ```js
-const readerUI = html`<div class="grid grid-cols-1 gap-6 px-1 animate-reveal w-full">
-  <!-- Main Reader Area - 100% Width -->
-  <div class="card-premium p-6 sm:p-10 shadow-2xl backdrop-blur-md w-full">
-    <div class="flex flex-col gap-6 mb-10 border-b border-slate-800 pb-8">
-      <div>
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter mb-1">${bookMeta.nome}</h2>
-        <p class="text-[0.6rem] text-slate-500 font-black uppercase tracking-[0.2em]">Cânon Bíblico • Tradução Literária</p>
+// Barra de progresso de leitura
+document.addEventListener('scroll', () => {
+  const main = document.getElementById('observablehq-main') || document.body;
+  const scrolled = window.scrollY;
+  const total    = main.scrollHeight - window.innerHeight;
+  const pct      = total > 0 ? Math.round((scrolled / total) * 100) : 0;
+  const bar = document.getElementById('reading-progress');
+  if (bar) bar.style.width = pct + '%';
+});
+```
+
+```js
+const isVT = bookMeta.testamento === "VT";
+const accentColor = isVT ? "#f59e0b" : "#38bdf8";
+
+const readerUI = html`<div class="animate-reveal w-full">
+
+  <!-- MAIN READER CARD -->
+  <div class="card-premium" style="padding:1.5rem;margin-bottom:1.5rem;">
+    
+    <!-- Book Title + Controls -->
+    <div style="border-bottom:1px solid rgba(51,65,85,0.5);padding-bottom:1.5rem;margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+        <div>
+          <h2 style="font-size:clamp(1.5rem,4vw,2.5rem);font-weight:900;color:#fff;letter-spacing:-0.04em;margin-bottom:0.25rem;">${bookMeta.nome}</h2>
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+            <span class="${isVT ? 'badge-vt' : 'badge-nt'}">${bookMeta.testamento || (isVT ? "VT" : "NT")}</span>
+            <span style="color:#475569;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Tradução Literária</span>
+          </div>
+        </div>
+        
+        <!-- TTS Button -->
+        <button id="tts-btn" class="btn-tts" onclick="toggleTTS()" title="Ouvir capítulo">
+          <span id="tts-icon">🔊</span>
+          <span id="tts-label">Ouvir Capítulo</span>
+        </button>
       </div>
-      <div class="flex flex-col sm:flex-row gap-4 w-full">
-        <div class="bg-black/40 p-4 rounded-2xl border border-slate-800 shadow-inner hover:border-sky-500/50 transition-all w-full sm:w-1/2">
-          <label class="text-[0.55rem] font-black text-slate-500 uppercase tracking-widest mb-1 block">Selecione o Capítulo</label>
+      
+      <!-- Chapter/Verse Selectors -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div style="background:rgba(0,0,0,0.3);padding:1rem;border-radius:1rem;border:1px solid rgba(51,65,85,0.5);">
+          <label style="display:block;font-size:0.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.5rem;">Selecione o Capítulo</label>
           ${chapterInputView}
         </div>
-        <div class="bg-black/40 p-4 rounded-2xl border border-slate-800 shadow-inner hover:border-sky-500/50 transition-all w-full sm:w-1/2">
-          <label class="text-[0.55rem] font-black text-slate-500 uppercase tracking-widest mb-1 block">Escolher Versículo</label>
+        <div style="background:rgba(0,0,0,0.3);padding:1rem;border-radius:1rem;border:1px solid rgba(51,65,85,0.5);">
+          <label style="display:block;font-size:0.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.5rem;">Ir ao Versículo</label>
           ${verseInputView}
         </div>
       </div>
     </div>
-    
-    <div class="prose-bible mb-12 selection:bg-sky-500/30 text-lg sm:text-xl w-full max-w-none">
-      <div class="w-full">
-        ${verses.map((texto, indice) => html`
-          <div id="verse-${indice + 1}" class="mb-6 flex items-start gap-4 p-3 rounded-xl transition-all duration-500 w-full ${selectedVerseNum === indice + 1 ? 'bg-sky-900/40 border-l-4 border-sky-400 shadow-lg shadow-sky-500/10' : 'hover:bg-slate-700/10'}">
-            <sup class="text-sky-500 font-black text-xs sm:text-sm mt-3.5 select-none shrink-0 w-6 text-right">${indice + 1}</sup> 
-            <span class="w-full text-slate-200 tracking-wide leading-relaxed">${highlightEntities(texto)}</span>
-          </div>
-        `)}
-      </div>
+
+    <!-- Bible Text -->
+    <div class="prose-bible" style="margin-bottom:2rem;">
+      ${verses.map((texto, indice) => html`
+        <div 
+          id="verse-${indice + 1}"
+          style="display:flex;align-items:flex-start;gap:1rem;padding:0.75rem;border-radius:0.875rem;margin-bottom:0.5rem;transition:all 0.4s ease;
+                 ${selectedVerseNum === indice + 1 
+                   ? `background:rgba(${isVT?'245,158,11':'56,189,248'},0.1);border-left:3px solid ${accentColor};padding-left:1rem;` 
+                   : 'border-left:3px solid transparent;'}"
+        >
+          <sup style="color:${accentColor};font-weight:900;font-size:0.75rem;margin-top:0.5rem;flex-shrink:0;width:1.75rem;text-align:right;">${indice + 1}</sup>
+          <span style="color:#e2e8f0;letter-spacing:0.02em;line-height:2;">${highlightEntities(texto)}</span>
+        </div>
+      `)}
     </div>
 
-    <!-- Navigation Buttons -->
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-slate-700/50 pt-8">
-      <a href="?book=${initialBook}&chapter=${selectedChapterNum > 1 ? selectedChapterNum - 1 : 1}" 
-         class="w-full sm:w-auto btn-nav ${selectedChapterNum <= 1 ? 'opacity-30 pointer-events-none' : ''}">
-        ← Capítulo Anterior
-      </a>
-      <span class="text-slate-500 font-black tracking-widest uppercase text-[0.6rem]">Capítulo ${selectedChapterNum} de ${bookMeta.chapters}</span>
-      <a href="?book=${initialBook}&chapter=${selectedChapterNum < bookMeta.chapters ? selectedChapterNum + 1 : bookMeta.chapters}" 
-         class="w-full sm:w-auto btn-nav ${selectedChapterNum >= bookMeta.chapters ? 'opacity-30 pointer-events-none' : ''}">
-        Próximo Capítulo →
-      </a>
+    <!-- Navigation -->
+    <div style="display:flex;flex-direction:column;gap:1rem;border-top:1px solid rgba(51,65,85,0.4);padding-top:1.5rem;align-items:center;">
+      <div style="display:flex;gap:1rem;width:100%;flex-wrap:wrap;">
+        <a href="?book=${initialBook}&chapter=${selectedChapterNum > 1 ? selectedChapterNum - 1 : 1}" 
+           class="btn-nav" style="${selectedChapterNum <= 1 ? 'opacity:0.3;pointer-events:none;' : ''}">
+          ← Anterior
+        </a>
+        <span style="color:#475569;font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;display:flex;align-items:center;flex:1;justify-content:center;">
+          Cap. ${selectedChapterNum} / ${bookMeta.chapters}
+        </span>
+        <a href="?book=${initialBook}&chapter=${selectedChapterNum < bookMeta.chapters ? selectedChapterNum + 1 : bookMeta.chapters}"
+           class="btn-nav" style="${selectedChapterNum >= bookMeta.chapters ? 'opacity:0.3;pointer-events:none;' : ''}">
+          Próximo →
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- NLP Similarity Analysis Panel (Grid Horizontal Inferior) -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-    <div class="card-premium p-6 shadow-xl w-full">
-      <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Análise do Capítulo</h3>
-      <div class="grid grid-cols-3 gap-3">
-        <div class="bg-slate-950/40 p-3 rounded-2xl border border-slate-800">
-          <span class="block text-2xl font-black text-white italic transition-all hover:text-sky-400">${totalWords}</span>
-          <span class="text-[0.5rem] text-slate-500 uppercase font-bold tracking-tighter">Total</span>
+  <!-- NLP ANALYTICS PANELS -->
+  <div class="grid-analytics" style="margin-top:0.5rem;">
+    
+    <!-- Análise do Capítulo -->
+    <div class="card-premium animate-reveal" style="padding:1.5rem;">
+      <h3 style="font-size:0.7rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1rem;">Análise do Capítulo</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;">
+        <div style="background:rgba(15,23,42,0.6);padding:0.875rem;border-radius:1rem;border:1px solid rgba(51,65,85,0.5);">
+          <span style="display:block;font-size:1.5rem;font-weight:900;color:#fff;">${totalWords}</span>
+          <span style="font-size:0.6rem;color:#475569;text-transform:uppercase;font-weight:700;">Total</span>
         </div>
-        <div class="bg-slate-950/40 p-3 rounded-2xl border border-slate-800">
-          <span class="block text-2xl font-black text-sky-400 italic transition-all hover:text-white">${uniqueWords}</span>
-          <span class="text-[0.5rem] text-slate-500 uppercase font-bold tracking-tighter">Únicas</span>
+        <div style="background:rgba(15,23,42,0.6);padding:0.875rem;border-radius:1rem;border:1px solid rgba(51,65,85,0.5);">
+          <span style="display:block;font-size:1.5rem;font-weight:900;color:${accentColor};">${uniqueWords}</span>
+          <span style="font-size:0.6rem;color:#475569;text-transform:uppercase;font-weight:700;">Únicas</span>
         </div>
-        <div class="bg-slate-950/40 p-3 rounded-2xl border border-slate-800 flex flex-col justify-center">
-          <div class="flex justify-between items-center mb-1">
-             <span class="text-[0.45rem] text-slate-500 uppercase font-black tracking-widest leading-none">Vibe</span>
-             <span class="text-[0.5rem] ${sentimentScore > 50 ? 'text-emerald-400' : 'text-amber-400'} font-black">${sentimentScore}%</span>
-          </div>
-          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-             <div class="h-full ${sentimentScore > 50 ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]' : 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.8)]'} transition-all duration-1000" style="width: ${sentimentScore}%"></div>
-          </div>
+        <div style="background:rgba(15,23,42,0.6);padding:0.875rem;border-radius:1rem;border:1px solid rgba(51,65,85,0.5);">
+          <span style="display:block;font-size:1.5rem;font-weight:900;color:#818cf8;">${richness}%</span>
+          <span style="font-size:0.6rem;color:#475569;text-transform:uppercase;font-weight:700;">Hapax</span>
+        </div>
+      </div>
+      <!-- Sentimento -->
+      <div style="background:rgba(15,23,42,0.4);padding:0.75rem;border-radius:0.875rem;border:1px solid rgba(51,65,85,0.4);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+          <span style="font-size:0.6rem;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;">Sentimento Semântico</span>
+          <span style="font-size:0.7rem;font-weight:900;color:${sentimentScore > 50 ? '#10b981' : '#f59e0b'};">${sentimentScore}%</span>
+        </div>
+        <div style="width:100%;background:#1e293b;height:6px;border-radius:999px;overflow:hidden;">
+          <div style="height:100%;width:${sentimentScore}%;background:${sentimentScore > 50 ? 'linear-gradient(90deg,#10b981,#34d399)' : 'linear-gradient(90deg,#f59e0b,#fcd34d)'};border-radius:999px;transition:width 1s ease;"></div>
         </div>
       </div>
     </div>
 
-    <div class="card-premium p-6 shadow-xl w-full">
-      <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Nuvem de Mineração (Top 10)</h3>
-      <div class="space-y-2">
-        <div class="flex flex-wrap gap-2">${sortedWords.map(([word, count]) => html`
-           <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-full hover:border-sky-500 transition-colors group">
-             <span class="text-slate-300 font-bold text-xs capitalize group-hover:text-white">${word}</span>
-             <span class="bg-slate-800 text-[0.6rem] px-1.5 py-0.5 rounded-md text-sky-400 font-black">${count}</span>
-           </div>
-        `)}</div>
+    <!-- Nuvem de Palavras Top 12 -->
+    <div class="card-premium animate-reveal" style="padding:1.5rem;">
+      <h3 style="font-size:0.7rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1rem;">Mineração de Termos (Top 12)</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+        ${sortedWords.map(([word, count], i) => html`
+          <div style="display:flex;align-items:center;gap:0.375rem;background:rgba(15,23,42,0.8);border:1px solid rgba(51,65,85,0.6);padding:0.375rem 0.75rem;border-radius:999px;transition:all 0.2s ease;"
+               onmouseover="this.style.borderColor='${accentColor}'" onmouseout="this.style.borderColor='rgba(51,65,85,0.6)'">
+            <span style="color:#e2e8f0;font-weight:600;font-size:0.8rem;text-transform:capitalize;">${word}</span>
+            <span style="background:rgba(56,189,248,0.1);color:${accentColor};font-size:0.6rem;font-weight:900;padding:0.1rem 0.4rem;border-radius:0.375rem;">${count}</span>
+          </div>
+        `)}
+        ${sortedWords.length === 0 ? html`<span style="color:#475569;font-style:italic;font-size:0.8rem;">Nenhum termo encontrado</span>` : ''}
       </div>
     </div>
 
-    <!-- Dynamic Entity Recognition -->
-    <div class="card-premium p-6 shadow-xl w-full">
-      <h3 class="text-[0.6rem] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Mencionado no Capítulo</h3>
-      <div class="w-full">
+    <!-- Entidades Detectadas -->
+    <div class="card-premium animate-reveal" style="padding:1.5rem;">
+      <h3 style="font-size:0.7rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1rem;">Entidades no Capítulo</h3>
+      <div style="width:100%;">
         ${detectedEntities.length > 0 
           ? resize((width) => Plot.plot({
-              width, height: 160, marginLeft: 80,
+              width, height: 180, marginLeft: 90,
+              style: { background: "transparent", color: "white", fontSize: "12px" },
               x: { label: "Frequência", grid: true },
               y: { label: null },
+              color: { scheme: "blues" },
               marks: [
-                Plot.barX(detectedEntities.slice(0, 5), { 
+                Plot.barX(detectedEntities.slice(0, 6), { 
                   x: "count", y: "nome", 
-                  fill: "count", 
-                  fillOpacity: 0.8,
-                  tip: true 
+                  fill: "count", fillOpacity: 0.85,
+                  tip: true, rx: 4
                 }),
-                Plot.text(detectedEntities.slice(0, 5), {
-                  x: "count", y: "nome", text: d => `${d.count}x`,
-                  dx: 15, fill: "white", fontWeight: "bold"
+                Plot.text(detectedEntities.slice(0, 6), {
+                  x: "count", y: "nome", text: d => `${d.count}×`,
+                  dx: 14, fill: "white", fontWeight: "bold", fontSize: 12
                 })
-              ],
-              color: { scheme: "blues" }
+              ]
             }))
-          : html`<div class="h-[160px] flex items-center justify-center text-slate-600 italic text-xs uppercase tracking-widest border border-dashed border-slate-800 rounded-xl">Nenhuma entidade identificada</div>`
+          : html`<div style="height:120px;display:flex;align-items:center;justify-content:center;color:#334155;font-style:italic;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;border:1px dashed #1e293b;border-radius:1rem;">Nenhuma entidade local</div>`
         }
       </div>
     </div>
@@ -322,16 +393,90 @@ const readerUI = html`<div class="grid grid-cols-1 gap-6 px-1 animate-reveal w-f
 ```
 
 ```js
-// Scroll dinâmico para o versículo selecionado
+// Scroll para versículo selecionado
 if (selectedVerseNum) {
   setTimeout(() => {
     const el = document.getElementById(`verse-${selectedVerseNum}`);
-    if(el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, 150);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 200);
 }
 ```
 
+```js
+// TTS Engine (Web Speech API — sem custo, nativa do browser)
+window._bibleTTS = {
+  synth:     window.speechSynthesis,
+  utterance: null,
+  speaking:  false,
+  verses:    [],
+  idx:       0
+};
+
+window.toggleTTS = function() {
+  const tts  = window._bibleTTS;
+  const btn   = document.getElementById('tts-btn');
+  const icon  = document.getElementById('tts-icon');
+  const label = document.getElementById('tts-label');
+
+  if (tts.speaking) {
+    tts.synth.cancel();
+    tts.speaking = false;
+    if (btn)   { btn.classList.remove('speaking'); }
+    if (icon)  icon.textContent  = '🔊';
+    if (label) label.textContent = 'Ouvir Capítulo';
+    return;
+  }
+
+  // Busca versículos do DOM
+  const verseEls = document.querySelectorAll('[id^="verse-"]');
+  const textArr  = Array.from(verseEls).map(el => el.querySelector('span')?.textContent || '');
+  
+  if (!textArr.length) return;
+
+  tts.verses  = textArr;
+  tts.idx     = 0;
+  tts.speaking = true;
+  if (btn)   btn.classList.add('speaking');
+  if (icon)  icon.textContent  = '⏹';
+  if (label) label.textContent = 'Pausar';
+
+  function speakNext() {
+    if (!tts.speaking || tts.idx >= tts.verses.length) {
+      tts.speaking = false;
+      if (btn)   btn.classList.remove('speaking');
+      if (icon)  icon.textContent  = '🔊';
+      if (label) label.textContent = 'Ouvir Capítulo';
+      return;
+    }
+
+    const utter = new SpeechSynthesisUtterance(tts.verses[tts.idx]);
+    utter.lang  = 'pt-BR';
+    utter.rate  = 0.92;
+    utter.pitch = 1.0;
+
+    // Destaca versículo atual
+    const verseEl = document.getElementById(`verse-${tts.idx + 1}`);
+    if (verseEl) verseEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    utter.onend = () => {
+      tts.idx++;
+      speakNext();
+    };
+    utter.onerror = () => {
+      tts.speaking = false;
+    };
+
+    tts.utterance = utter;
+    tts.synth.speak(utter);
+  }
+
+  speakNext();
+};
+
+// Para TTS ao trocar de capítulo
+window.speechSynthesis?.cancel();
+```
+
 ${readerUI}
+
 </div>
