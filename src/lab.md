@@ -48,9 +48,23 @@ Pergunta: ${query}`;
     const raw = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sem resposta da IA.";
     let text = raw;
     let chart = null;
-    const m = raw.match(/---JSON---([\s\S]*?)---/);
+
+    // Busca qualquer coisa entre ---JSON--- e --- ou até o fim da string
+    const m = raw.match(/---JSON---([\s\S]*?)(?:---|$)/);
     if (m) {
-      try { chart = JSON.parse(m[1].trim()); text = raw.replace(m[0], "").trim(); } catch (_) {}
+      try { 
+        // Pega o conteúdo, mas garante que tá pegando só o JSON válido (de { até })
+        let jsonStr = m[1].trim();
+        const startIdx = jsonStr.indexOf('{');
+        const endIdx = jsonStr.lastIndexOf('}');
+        if (startIdx !== -1 && endIdx !== -1) {
+            jsonStr = jsonStr.substring(startIdx, endIdx + 1);
+            chart = JSON.parse(jsonStr); 
+        }
+        text = raw.replace(/---JSON---[\s\S]*$/, "").trim(); // Remove do texto a parte do JSON pra baixo
+      } catch (err) {
+        console.error("Erro ao parsear JSON:", err);
+      }
     }
     aiState.value = { loading: false, response: { text, chart } };
   } catch (e) {
