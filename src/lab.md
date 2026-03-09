@@ -7,9 +7,9 @@ sidebar: false
 
 ```js
 // ── BLOCO 1: Estado, Input e Lógica da IA ────────────────────────────────────
-// Chave ofuscada e particionada para evitar alarmes de scanners (ex: GitHub/GitGuardian)
-const _k = ["QUl6YVN5", "QVRhMkY3c", "FdJSFNVa0hi", "cDdTNFB6Y2Y", "5Mm1GbzVqY0gw"];
-const API_KEY = atob(_k.join(''));
+// ATENÇÃO: A chave da API foi removida por motivos de segurança (GitGuardian alert).
+// Insira sua chave da API abaixo ou crie um mecanismo seguro (ex: variável de ambiente no build)
+const API_KEY = ""; // Substitua pela sua chave da API do Google Gemini
 
 // Input widget
 const aiInput = Inputs.text({
