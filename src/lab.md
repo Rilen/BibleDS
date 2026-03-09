@@ -7,11 +7,13 @@ sidebar: false
 
 ```js
 // ── BLOCO 1: Estado, Input e Lógica da IA ────────────────────────────────────
-// ATENÇÃO: A chave da API foi removida por motivos de segurança (GitGuardian alert).
-// Insira sua chave da API abaixo ou crie um mecanismo seguro (ex: variável de ambiente no build)
-const API_KEY = ""; // Substitua pela sua chave da API do Google Gemini
+// Campo para inserir a chave em tempo de execução (não fica salva no repositório público)
+const apiKeyInput = Inputs.password({
+  label: "🔑 Google Gemini API Key",
+  placeholder: "Cole sua chave (AIzaSy...) aqui",
+});
 
-// Input widget
+// Input widget de pergunta
 const aiInput = Inputs.text({
   placeholder: "Pergunte algo (ex: Quem é Jesus?, Livros com mais capítulos...)",
 });
@@ -23,6 +25,13 @@ const aiState = Mutable({ loading: false, response: null });
 async function callGemini(query) {
   if (!query || query.trim().length < 3) return;
   aiState.value = { loading: true, response: null };
+
+  const API_KEY = apiKeyInput.value?.trim();
+  if (!API_KEY) {
+    aiState.value = { loading: false, response: { text: "⚠️ Chave de API não informada! Por favor, insira a sua API Key do Google Gemini no campo próprio acima." } };
+    return;
+  }
+
   try {
     const prompt = `Você é um assistente analítico especializado na Bíblia e Ciência de Dados.
 Responda em PORTUGUÊS de forma concisa e clara.
@@ -260,6 +269,9 @@ const relacionalView = resize((width) => {
       Assistente Analítico <span class="text-sky-500 italic">IA</span>
     </h2>
     <div class="flex flex-col gap-4">
+      <div class="relative max-w-md w-full mb-1">
+        ${apiKeyInput}
+      </div>
       <div class="relative">
         ${aiInput}
         <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
