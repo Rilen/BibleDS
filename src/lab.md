@@ -7,7 +7,9 @@ sidebar: false
 
 ```js
 // ── BLOCO 1: Estado, Input e Lógica da IA ────────────────────────────────────
-const API_KEY = atob("QUl6YVN5RGo3Q0dIc181S3NIYVF0UlNoQmFnbHRRN1NUNUFZU0pB"); // Chave ofuscada para evitar bloqueio automático do GitHub
+const apiKeyInput = Inputs.password({
+  placeholder: "Insira sua API Key do Gemini (não será salva)",
+});
 
 // Input widget
 const aiInput = Inputs.text({
@@ -20,6 +22,13 @@ const aiState = Mutable({ loading: false, response: null });
 // Função que chama Gemini
 async function callGemini(query) {
   if (!query || query.trim().length < 3) return;
+  
+  const API_KEY = apiKeyInput.querySelector("input")?.value?.trim();
+  if (!API_KEY) {
+    aiState.value = { loading: false, response: { text: "⚠️ Por favor, insira a sua **Chave de API do Gemini** no campo acima para fazer pesquisas." } };
+    return;
+  }
+
   aiState.value = { loading: true, response: null };
   try {
     const prompt = `Você é um assistente analítico especializado na Bíblia e Ciência de Dados.
@@ -258,7 +267,12 @@ const relacionalView = resize((width) => {
       Assistente Analítico <span class="text-sky-500 italic">IA</span>
     </h2>
     <div class="flex flex-col gap-4">
+      <div class="relative mb-2">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Passo 1: Autenticação</div>
+        ${apiKeyInput}
+      </div>
       <div class="relative">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 mt-2">Passo 2: Pergunta</div>
         ${aiInput}
         <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
           ${aiLoading ? html`<div class="animate-spin h-4 w-4 border-2 border-sky-500 border-t-transparent rounded-full"></div>` : ""}
