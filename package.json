@@ -1,38 +1,18 @@
 {
-  "name": "bibleds",
-  "version": "0.0.0",
+  "name": "bibleds-observable",
+  "version": "1.0.0",
+  "description": "Análise Semântica da Bíblia via Observable Framework",
+  "type": "module",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "deploy": "npm run build && firebase deploy",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "build": "observable build",
+    "dev": "observable preview",
+    "deploy": "observable deploy"
   },
-  "private": true,
-  "packageManager": "npm@11.8.0",
   "dependencies": {
-    "@angular/common": "^21.2.0",
-    "@angular/compiler": "^21.2.0",
-    "@angular/core": "^21.2.0",
-    "@angular/forms": "^21.2.0",
-    "@angular/platform-browser": "^21.2.0",
-    "@angular/router": "^21.2.0",
-    "@capacitor/cli": "^8.1.0",
-    "@capacitor/core": "^8.1.0",
-    "@ionic/angular": "^8.7.18",
-    "@ionic/angular-toolkit": "^12.3.0",
-    "ionicons": "^8.0.13",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "@observablehq/framework": "^1.9.0",
+    "d3": "^7.9.0"
   },
-  "devDependencies": {
-    "@angular/build": "^21.2.0",
-    "@angular/cli": "^21.2.0",
-    "@angular/compiler-cli": "^21.2.0",
-    "jsdom": "^28.0.0",
-    "prettier": "^3.8.1",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+  "engines": {
+    "node": ">=18"
   }
 }

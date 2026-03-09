@@ -1,217 +1,105 @@
+# 🚀 BibleDS Hyper-Analytics
+
 <div align="center">
-
-# 📖 BibleDS · Hyper-Analytics
-
-### AI-Driven Semantic Engine para Análise Textual das Escrituras
-
-**Observable Framework · TypeScript · Tailwind CSS · Firebase**
-
-[![Firebase Hosting](https://img.shields.io/badge/Firebase_Hosting-Online-FF6F00?style=flat-square&logo=firebase&logoColor=white)](https://bibleds.web.app)
-[![Observable Framework](https://img.shields.io/badge/Observable-Framework-8A30F4?style=flat-square&logo=observable&logoColor=white)](https://observablehq.com/framework/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-
-<br/>
-
-> **759.798 palavras processadas · Integridade 100% · Latência O(1)**
-
-<br/>
-
-**[🌐 Acessar o App →](https://bibleds.web.app)**
-
+    <!-- Adicione a imagem do "Anexo I" aqui -->
+    <img src="./docs/captura.png" alt="Banner ou Screenshot do Projeto" width="100%" style="max-width:800px;">
 </div>
 
----
+<br>
 
-## 📸 Interface
+## 📝 Descrição do Projeto
 
-![BibleDS Dashboard](./docs/captura.png)
+O **BibleDS Hyper-Analytics** tem como objetivo analisar o texto da Bíblia de forma semântica, utilizando inteligência artificial para mapear relacionamentos, traços cronológicos ("Ano Mundi") e extrair o sentimento e influência de personagens ao longo do tempo através de uma interface interativa (Hyper-Analytics Dashboard).
 
-> Dashboard com KPIs em tempo real, engine *Static Set Filtering*, e análise de Densidade Lexical por livro — filtrável por Antigo e Novo Testamento.
-
----
-
-## 📌 O que é o BibleDS?
-
-**BibleDS Hyper-Analytics** é uma plataforma de **ciência de dados aplicada ao texto bíblico**, construída sobre o [Observable Framework](https://observablehq.com/framework/). O projeto trata as Escrituras como um corpus linguístico estruturado — processando, indexando e visualizando padrões semânticos e lexicais com precisão analítica.
-
-O sistema não é um leitor de Bíblia. É um **laboratório de análise textual** onde cada versículo é um dado, cada livro é uma dimensão, e cada busca retorna em tempo O(1).
+Desenvolvido com foco em **processamento de linguagem natural (PNL), análise de dados e imersão analítica de alta performance**, ele fornece uma nova perspectiva teológica e gráfica unindo dados estruturados de Big Data com a interatividade de web moderna (Observable Framework).
 
 ---
 
-## ✨ Módulos
+## 🛠️ Tecnologias e Ferramentas Utilizadas
 
-| Módulo | Descrição |
+Nesta seção, listamos as principais tecnologias que sustentam o projeto.
+
+| Camada | Tecnologias |
 |:---|:---|
-| 📊 **Dashboard** | KPIs globais do corpus: volume bruto, integridade do pipeline, engine ativa e livros sincronizados |
-| 📚 **Estudos** | Análise de Densidade Lexical por livro com filtro por Testamento (AT / NT / Todos) |
-| 🤖 **Laboratório IA** | Motor semântico experimental — busca por conceito, não por palavra-chave |
+| **Linguagem/Runtime** | ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white) |
+| **Frameworks/Libs** | ![Observable Framework](https://img.shields.io/badge/Observable_Framework-000000?style=for-the-badge&logo=observable&logoColor=white) ![D3.js](https://img.shields.io/badge/D3.js-F9A03C?style=for-the-badge&logo=d3.js&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) |
+| **Banco de Dados/Dados** | ![JSON](https://img.shields.io/badge/JSON-000000?style=for-the-badge&logo=json&logoColor=white) (Estruturado/Estático) |
+| **DevOps/Cloud** | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black) ![Google Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google-gemini&logoColor=white) |
+| **Ferramentas** | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![VS Code](https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white) |
 
 ---
 
-## ⚙️ Engine: Static Set Filtering
+## ⚙️ Como Rodar o Projeto Localmente
 
-O núcleo do BibleDS usa **Static Set Filtering** como estratégia de busca — um índice pré-computado em sets JavaScript que entrega:
+Siga estes passos para configurar o ambiente e executar o projeto na sua máquina.
 
-- **Latência O(1)** independente do volume do corpus
-- **Integridade 100%** — pipeline validado contra o corpus completo
-- **759.798 palavras** processadas e indexadas no build
-- **Zero dependência de servidor** em tempo de execução — tudo roda no browser
+### 📋 Pré-requisitos
 
-```
-corpus (texto bruto)
-     ↓
-  tokenização + normalização
-     ↓
-  índice invertido (Map<token, Set<verseId>>)
-     ↓
-  Static Set → busca O(1) no browser
-```
+Antes de começar, você vai precisar ter instalado:
+* [Node.js](https://nodejs.org/) versão 18 ou superior
+* [Git](https://git-scm.com/)
+* [Firebase CLI](https://firebase.google.com/docs/cli) *(Opcional, para deploy)*
 
----
+### 🔧 Instalação e Execução
 
-## 📊 KPIs do Corpus
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/rilen/BibleDS.git
+    cd BibleDS
+    ```
 
-| Métrica | Valor |
-|:---|:---:|
-| Volume bruto processado | **759.798 palavras** |
-| Integridade do pipeline | **100%** |
-| Engine de busca | **Static Set Filtering** |
-| Livros NT sincronizados | **27 / 73** |
-| Latência de busca | **O(1)** |
+2.  **Configure as variáveis de ambiente:**
+    * Crie um arquivo `.env` (se houver integração local com a IA, por ex: `GEMINI_API_KEY`) e preencha com as suas configurações. **Nunca envie o `.env` real para o Git!**
 
----
+3.  **Instale as dependências:**
+    ```bash
+    npm install
+    # ou
+    yarn install
+    ```
 
-## 🛠️ Stack Técnica
+4.  **Execute o projeto em desenvolvimento:**
+    ```bash
+    npm run dev
+    # ou
+    yarn dev
+    ```
 
-| Camada | Tecnologia | Papel |
-|:---|:---|:---|
-| **Framework** | Observable Framework | Renderização reativa de notebooks/dashboards |
-| **Linguagem** | TypeScript | Tipagem estrita do pipeline de dados |
-| **Estilo** | Tailwind CSS (CDN) | Design system dark utilitário |
-| **Tipografia** | Inter + Merriweather | UI técnica + leitura de texto bíblico |
-| **Tema** | Dark / Slate nativo | Observable dark theme customizado |
-| **Hosting** | Firebase Hosting | Deploy estático com CDN global |
-| **CI/CD** | GitHub Actions | Build e deploy automático em push |
+5.  **Acesse a aplicação:**
+    A aplicação estará rodando em `http://localhost:3000`.
 
 ---
 
-## 🗂️ Estrutura do Projeto
+## 📁 Estrutura do Projeto (Visão Geral)
 
-```
+Para facilitar a navegação, aqui está uma breve descrição da organização das pastas no Observable Framework.
+
+```text
 BibleDS/
-│
-├── src/                        # Raiz do Observable Framework
-│   ├── index.md                # Dashboard principal (KPIs + Engine)
-│   ├── home.md                 # Página de Estudos (Densidade Lexical)
-│   ├── lab.md                  # Laboratório IA (busca semântica)
-│   │
-│   ├── components/             # Componentes TypeScript reutilizáveis
-│   │   ├── kpi-card.ts         # Cards de métricas globais
-│   │   ├── lexical-chart.ts    # Gráfico de Densidade Lexical (D3/Plot)
-│   │   └── search-engine.ts    # Static Set Filtering engine
-│   │
-│   ├── data/                   # Loaders de dados do corpus
-│   │   ├── corpus.json.ts      # Pipeline de processamento do texto bíblico
-│   │   └── index.json.ts       # Índice invertido pré-computado
-│   │
-│   └── styles/
-│       └── main.css            # Tokens CSS + overrides do tema Observable
-│
-├── .github/workflows/
-│   └── deploy.yml              # CI/CD → Firebase Hosting
-│
-├── .firebase/                  # Cache de deploy Firebase
-├── .firebaserc                 # Projeto ativo: bibleds
-├── firebase.json               # Configuração de hosting
-├── observablehq.config.ts      # Configuração global do framework
-├── package.json                # Scripts e dependências
-└── tsconfig.json               # TypeScript strict mode
+├── src/                  # Código-fonte e páginas Markdown da aplicação
+│   ├── data/             # Processamento de dados e JSONs (Dataloaders)
+│   ├── styles/           # Estilos globais e customizações custom CSS
+│   └── *.md              # Páginas de conteúdo iterativas (dashboard, etc.)
+├── dist/                 # Build de arquivos estáticos gerados em prod
+├── .firebase/            # Cache e metadados de hospedagem
+├── observablehq.config.js# Configurações do ambiente do Observable
+├── firebase.json         # Configuração de deploy no Firebase Hosting
+├── tailwind.config.js    # Arquivo de configuração do Tailwind CSS
+└── README.md             # Este arquivo
 ```
 
 ---
 
-## 🚀 Rodando Localmente
+# Rilen T. L. - DataScience
 
-### Pré-requisitos
+**25+ anos em TI - Especialista em Big Data | IA | CyberSecurity**
 
-- Node.js ≥ 18
-- npm ≥ 9
+***Full Stack Development & Data Intelligence***
 
-### Instalação
+Rio das Ostras · RJ · Brasil · PcD (Implante Coclear)
 
-```bash
-# 1. Clonar o repositório
-git clone https://github.com/Rilen/BibleDS.git
-cd BibleDS
-
-# 2. Instalar dependências
-npm install
-
-# 3. Iniciar servidor de desenvolvimento
-npm run dev
-```
-
-Acesse **http://localhost:3000**
-
-O Observable Framework atualiza automaticamente ao salvar qualquer arquivo `.md` ou `.ts`.
-
-### Scripts
-
-| Comando | Descrição |
-|:---|:---|
-| `npm run dev` | Servidor de desenvolvimento com live reload |
-| `npm run build` | Build estático para produção em `dist/` |
-| `npm run preview` | Pré-visualização do build local |
-| `npm run deploy` | Build + deploy para Firebase Hosting |
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rilen/)
+[![Gmail](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:rilen.lima@gmail.com)
+[![Portfólio](https://img.shields.io/badge/Portfólio-000000?style=for-the-badge&logo=githubpages&logoColor=white)](https://rilen.github.io/portfolio/)
 
 ---
-
-## ☁️ Deploy
-
-O projeto usa **GitHub Actions** para deploy automático em cada push na branch `main`:
-
-```bash
-# Deploy manual
-npm run build
-firebase deploy --only hosting
-```
-
-| Serviço | URL |
-|:---|:---|
-| 🌐 Aplicação | https://bibleds.web.app |
-| 🖥️ Console Firebase | https://console.firebase.google.com/project/bibleds |
-
----
-
-## 🔮 Roadmap
-
-- [ ] **NLP Semântico** — embeddings vetoriais para busca por conceito teológico
-- [ ] **Análise de Co-ocorrência** — grafo de termos relacionados por livro/capítulo
-- [ ] **Comparativo de Traduções** — diff lexical entre versões (ARA, NVI, ACF)
-- [ ] **Timeline Histórica** — visualização cronológica dos livros por autoria
-- [ ] **Laboratório IA completo** — integração com modelo de linguagem (LLM) para Q&A bíblico
-- [ ] **Export de análises** — CSV / JSON do índice e métricas por livro
-- [ ] **Sincronização completa NT** — 73/73 livros indexados
-
----
-
-## 👤 Autor
-
-**Rilen Tavares Lima**  
-Data Scientist · Supervisor de Governança de TIC · 25+ anos em infraestrutura crítica
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rilen/)
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/rilen)
-[![Portfólio](https://img.shields.io/badge/Portfólio-000000?style=flat-square&logo=githubpages&logoColor=white)](https://rilen.github.io/portfolio/)
-
----
-
-<div align="center">
-
-**BibleDS Hyper-Analytics** · AI-Driven Semantic Engine v2.0
-
-*As Escrituras como corpus. Os dados como revelação.*
-
-</div>
